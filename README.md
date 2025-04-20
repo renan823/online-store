@@ -16,15 +16,22 @@ Dados das entidades:</br>
 - Admin: Id, nome, email, telefone
 - Usuário: Id, nome, email, telefone, endereço
 - Cartão: Id, id usuário, nome, número
-- Produto: Id, nome, descrição, preço, quantidade estoque, quantidade vendida, foto (armazena o caminho para a foto)
+- Produto: Id, nome, descrição, preço, quantidade estoque, marca, desconto (opcional, padrão 0), quantidade vendida, foto (armazena o caminho para a foto)
 - Compra: Id, id usuário, id produtos, Id cartão, preço total, data da compra, status (aprovado, etc)
 - Carrinho: Id, id usuário, id produtos
+
+### Modelo de navegação (cliente e admin)
+![Navegação cliente](./diagramas/nav_cliente.png)
+</br>
+
+![Navegação admin](./diagramas/nav_admin.png)
 
 ## Descrição do projeto
 
 ## Comentários sobre o código
 
 ## Plano de testes
+Para executar teste do backend, plataformas como Postman e Insomnia podem ser úteis. A princípio, o código deve ser auto documentável, com o uso do Swagger, o que facilita testes na interface embutida (Swagger-ui).
 
 ## Resultados dos testes
 
