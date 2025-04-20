@@ -6,9 +6,18 @@ O sistema de loja de produtos eletrônicos possui 3 entidades principais: usuár
 Usuários são divididos em usuários comuns e administradores, cada qual com suas permissões e funções no sistema. Usuários comuns realizam compras, buscam produtos, etc. Administradores cadastram outros usuários (ambos os tipos) e produtos. </br>
 Produtos são adicionados ao sistema e podem ser comprados pelo usuário se existir estoque. Na compra, o usuário deve selecionar o cartão que deseja usar para o pagamento. </br>
 Administradores possuem total controle sobre o estoque de produtos, podendo adicionar, alterar ou remover items. </br>
-Todos os administradores têm acesso ao dashboard de vendas, que possibilita analisar dados de compras, produtos e usuários para gerar relatórios.
+Todos os administradores têm acesso ao dashboard de vendas, que possibilita analisar dados de compras, produtos e usuários para gerar relatórios. </br>
+
+### Modelo entidade-relacionamento para o sistema
 
 
+Dados das entidades:</br>
+- Admin: Id, nome, email, telefone
+- Usuário: Id, nome, email, telefone, endereço
+- Cartão: Id, id usuário, nome, número
+- Produto: Id, nome, descrição, preço, quantidade estoque, quantidade vendida, foto (armazena o caminho para a foto)
+- Compra: Id, id usuário, id produtos, Id cartão, preço total, data da compra, status (aprovado, etc)
+- Carrinho: Id, id usuário, id produtos
 
 ## Descrição do projeto
 
