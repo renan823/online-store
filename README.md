@@ -27,6 +27,50 @@ Dados das entidades:</br>
 ![Navegação admin](./diagramas/nav_admin.png)
 
 ## Descrição do projeto
+A loja online de produtos elêtronicos será implementada usando React + Tailwindcss (frontend) e Bun.js + Fastify (backend). </br>
+Os dados serão armazenados em um banco de dados, acessado pelo servidor. </br>
+
+### Casos de uso - Administrador
+Um admin pode: </br>
+- Gerenciar (criar, atualizar, excluir e buscar) produtos
+- Gerenciar (criar, atualizar, excluir e buscar) usuários
+- Analisar dados de compras já realizadas
+- Editar seus próprios dados (alterar senha, etc)
+
+### Casos de uso - Cliente
+Um cliente pode: </br>
+- Buscar produtos
+- Adicionar/excluir produtos em seu carrinho de compras
+- Gerenciar (criar, atualizar, excluir e buscar) seus cartões
+- Comprar os items em seu carrinho
+- Ver compras já realizadas
+- Editar seus próprios dados (alterar senha, ect)
+
+### Casos de uso - Cartões do usuário
+- O usuário pode gerenciar seus cartões
+- Para realizar compras, pelo menos um cartão deve estar cadastrado
+
+### Casos de uso - Produto
+- Produtos são criados por administradores
+- O estoque e o número de vendas de um produto é atualizado a cada compra que envolva-o
+- Administradores podem atribuir descontos aos produtos
+- Produtos sem estoque podem ser buscados e exibidos, mas não comprados
+
+### Casos de uso - Cart
+- Todo usuário possui um carrinho de compras único e próprio
+- O usuário pode adicionar e remover items do carrinho
+- Items fora de estoque são excluídos do carrinho
+- O carrinho deve somar os valores e aplicar os descontos (se houverem) no total da compra
+
+### Casos de uso - Compra
+- Uma compra só pode ser realizada via carrinho de compras
+- Caso um item da compra esteja indisponível, o mesmo é retirado da compra e seu valor subtraído
+- Caso o usuário não possua cartões, a compra não pode prosseguir
+- Ao finalizar uma compra, o carrinho é esvaziado e os produtos são atualizados no estoque
+
+### Casos de uso - Dashboard
+- Um admin pode buscar dados de compras na base de dados
+- Resultados são exibidos via gráfico ou arquivo para download
 
 ## Comentários sobre o código
 
