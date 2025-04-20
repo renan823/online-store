@@ -10,6 +10,7 @@ Todos os administradores têm acesso ao dashboard de vendas, que possibilita ana
 
 ### Modelo entidade-relacionamento para o sistema
 
+</img src="./diagramas/MER.png">
 
 Dados das entidades:</br>
 - Admin: Id, nome, email, telefone
