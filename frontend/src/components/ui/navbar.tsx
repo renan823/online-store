@@ -14,14 +14,14 @@ export function Navbar() {
                     </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <Link to="/products">
+                    <Link to="/cart">
                         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                             Carrinho
                         </NavigationMenuLink>
                     </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <Link to="/products">
+                    <Link to="/user/profile">
                         <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                             Perfil
                         </NavigationMenuLink>

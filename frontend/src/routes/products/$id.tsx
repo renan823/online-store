@@ -42,7 +42,7 @@ function RouteComponent() {
 							<h2>Marca: {product.brand}</h2>
 						</div>
 						<div className="flex justify-between items-center mt-auto mb-5">
-							<h2 className='text-2xl font-bold'>R${product.price}</h2>
+							<h2 className='text-2xl font-bold'>R${product.price.toFixed(2)}</h2>
 							<Button onClick={addToCart} className="font-bold text-lg px-8 py-2">Comprar</Button>
 						</div>
 					</div>

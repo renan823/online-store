@@ -19,7 +19,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 <CardTitle>{product.name}</CardTitle>
                 <CardDescription>{product.description}</CardDescription>
                 <CardDescription className="my-2">
-                    <h2 className="font-bold text-xl">R${product.price}</h2>
+                    <h2 className="font-bold text-xl">R${product.price.toFixed(2)}</h2>
                 </CardDescription>
                 <div className="flex justify-end">
                     <Button onClick={() => navigate({ to: "/products/$id", params: { id: product.id }})}>Comprar</Button>
