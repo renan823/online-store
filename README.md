@@ -83,12 +83,24 @@ Para executar teste do backend, plataformas como Postman e Insomnia podem ser ú
 ## Resultados dos testes
 
 ## Instalação e execução
+Clone este reposiório. </br>
+<br/>
+Frontend (rodando em localhost:5173):</br>
+```
+cd frontend/
+```
+```
+bun install
+```
+```
+bun run dev
+```
 
 ## Problemas
 
 ## Comentários adicionais
 Para facilitar o desenvolvimento, as seguintes bibliotecas/frameworks forma utilizadas: <br/>
-- React + Vite
+- React + Vite + Bun (webpack de desenvolvimento)
 - Tailwindcss (estilos)
 - Shadcn/ui (componentes estilizados)
 - Zod + React Hook Form (esquemas e validação de formulários)
