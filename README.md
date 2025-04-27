@@ -26,6 +26,9 @@ Dados das entidades:</br>
 
 ![Navegação admin](./diagramas/nav_admin.png)
 
+### Esquema da telas (designs e inspirações para implementação)
+https://www.figma.com/design/m3WMZW8nlabPySLZ4R0j9Y/web?node-id=0-1&t=CwbLw7NK2zHSW6xv-1
+
 ## Descrição do projeto
 A loja online de produtos elêtronicos será implementada usando React + Tailwindcss (frontend) e Bun.js + Fastify (backend). </br>
 Os dados serão armazenados em um banco de dados, acessado pelo servidor. </br>
@@ -84,3 +87,10 @@ Para executar teste do backend, plataformas como Postman e Insomnia podem ser ú
 ## Problemas
 
 ## Comentários adicionais
+Para facilitar o desenvolvimento, as seguintes bibliotecas/frameworks forma utilizadas: <br/>
+- React + Vite
+- Tailwindcss (estilos)
+- Shadcn/ui (componentes estilizados)
+- Zod + React Hook Form (esquemas e validação de formulários)
+- Tanstack Router (roteamento/páginas)
+- Tanstack Query (consumo de APIs e caching)
