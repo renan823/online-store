@@ -40,29 +40,33 @@ function RouteComponent() {
 				<h1 className='font-bold text-xl'>Meu carrinho</h1>
 			</div>
 			<Separator />
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>Produto</TableHead>
-						<TableHead className="text-center">Quantidade</TableHead>
-						<TableHead className="text-center">Preço Unitário</TableHead>
-						<TableHead className="text-center">Preço Total</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{items.map(item => (
-						<CartItemRow item={item} key={item.product.id} />
-					))}
-				</TableBody>
-			</Table>
+			<div className="overflow-x-auto">
+				<Table className="min-w-[600px]">
+					<TableHeader>
+						<TableRow>
+							<TableHead>Produto</TableHead>
+							<TableHead className="text-center">Quantidade</TableHead>
+							<TableHead className="text-center">Preço Unitário</TableHead>
+							<TableHead className="text-center">Preço Total</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{items.map((item, index) => (
+							<CartItemRow item={item} key={index} />
+						))}
+					</TableBody>
+				</Table>
+			</div>
 			<Separator/>
-			<div className='flex justify-between items-center'>
+			<div className='flex flex-col md:flex-row justify-between items-center gap-4'>
 				<Button onClick={() => navigate({ to: "/products"})} size="lg" variant="secondary">Continuar comprando</Button>
-				<Card className='rounded-sm'>
-					<CardContent className='flex flex-row items-center gap-20'>
-						<p className='font-bold text-lg'>Subtotal: R$ {subtotal}</p>
-						<p className='font-bold text-lg'>Total (com descontos): R$ {total}</p>
-						<Button className='font-bold text-lg'>Finalizar compra</Button>
+				<Card className='rounded-sm w-full md:w-auto'>
+					<CardContent className='flex flex-col md:flex-row items-center md:gap-20 gap-4 p-4'>
+						<div className="text-center md:text-left">
+							<p className='font-bold text-lg'>Subtotal: R$ {subtotal}</p>
+							<p className='font-bold text-lg'>Total (com descontos): R$ {total}</p>
+						</div>
+						<Button className='font-bold text-lg w-full md:w-auto'>Finalizar compra</Button>
 					</CardContent>
 				</Card>
 			</div>
@@ -83,11 +87,11 @@ function CartItemRow({ item }: CartItemCardProps) {
 				onClick={() => navigate({ to: "/products/$id", params: { id: item.product.id } })} 
 				className="flex items-center gap-4 cursor-pointer"
 			>
-				<img src={item.product.image} alt={item.product.name} className="w-16 h-16 object-cover rounded-md" />
-				<span className="font-semibold">{item.product.name}</span>
+				<img src={item.product.image} alt={item.product.name} className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md" />
+				<span className="font-semibold text-sm sm:text-base">{item.product.name}</span>
 			</TableCell>
 			<TableCell className="text-center">
-				<div className="flex items-center justify-center gap-4">
+				<div className="flex items-center justify-center gap-2 sm:gap-4">
 					<Button variant="outline" size="icon">
 						<Minus />
 					</Button>
@@ -97,10 +101,10 @@ function CartItemRow({ item }: CartItemCardProps) {
 					</Button>
 				</div>
 			</TableCell>
-			<TableCell className="text-center">
+			<TableCell className="text-center text-sm sm:text-base">
 				R$ {item.product.price.toFixed(2)}
 			</TableCell>
-			<TableCell className="text-center">
+			<TableCell className="text-center text-sm sm:text-base">
 				R$ {(item.product.price * item.quantity).toFixed(2)}
 			</TableCell>
 		</TableRow>
