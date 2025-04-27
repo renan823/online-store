@@ -10,14 +10,14 @@ function Index() {
     return (
         <div className="p-2">
             <HeaderBanner/>
-            <div className="my-4">
-                <h1 className="text-lg font-bold">A melhor loja</h1>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum, similique id? Praesentium sunt pariatur facere odio voluptatum ipsa officia ratione repellendus cumque, quo autem consequatur quibusdam, non enim suscipit numquam.</p>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum, similique id? Praesentium sunt pariatur facere odio voluptatum ipsa officia ratione repellendus cumque, quo autem consequatur quibusdam, non enim suscipit numquam.</p>
+           
+            <Separator className="my-10 size-1" />
+            <div className="flex w-full justify-center my-2">
+                <ProductsBanner/>
             </div>
-            <Separator className="my-4 size-1" />
-            <ProductsBanner/>
-            <OfferBanner/>
+            <div className="flex w-full justify-center my-2">
+                <OfferBanner/>
+            </div>
         </div>
     )
 }
