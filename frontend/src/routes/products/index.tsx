@@ -33,9 +33,9 @@ function RouteComponent() {
 				</div>
 			</div>
 			<Separator/>
-			<div className='p-4'>
+			<div className='p-4 flex justify-center'>
 				<ScrollArea>
-					<div className='grid grid-cols-4 gap-15'>
+					<div className='grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-1 gap-15'>
 						<ProductCard product={product}/>
 						<ProductCard product={product}/>
 						<ProductCard product={product}/>
