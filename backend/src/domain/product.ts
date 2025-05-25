@@ -1,6 +1,6 @@
-import { z } from "zod";
+import z from "zod";
 
-export interface Product {
+export type Product = {
     id: string;
     name: string;
     description: string;

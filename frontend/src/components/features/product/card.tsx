@@ -13,7 +13,7 @@ export function ProductCard({ product }: ProductCardProps) {
     return (
         <Card className="xl:w-[20vw] lg:w-[18vw] md:w-[25vw] sm:w-[60vw] rounded-md">
             <CardHeader className="flex justify-center">
-                <img src={product.image} />
+                <img src={product.images[0]} />
             </CardHeader>
             <CardContent>
                 <CardTitle>{product.name}</CardTitle>

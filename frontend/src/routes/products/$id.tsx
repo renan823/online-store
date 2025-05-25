@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { notify } from '@/lib/notify';
-import { Product } from '@/lib/types/product';
+import { useFetchProductById } from '@/services/product.service';
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/products/$id')({
@@ -10,28 +11,55 @@ export const Route = createFileRoute('/products/$id')({
 function RouteComponent() {
 	const { id } = Route.useParams();
 
-	const product: Product = {
-		id,
-		name: "Produto exemplo",
-		description: "Um produto de muita qualidade, sem defeitos. Funciona em velocidade muito boa, é rápido.",
-		brand: "Pineapple",
-		price: 2500.50,
-		discount: 0.2,
-		image: "https://placehold.co/300",
-		stock: 3
-	}
+	const { isLoading, error, data: product } = useFetchProductById(id);
 
 	function addToCart() {
 		notify.success("Adicionado ao carrinho");
+	}
+
+	if (isLoading) {
+		return (
+			<div className='flex items-center justify-between p-10'>
+				<h1 className='text-2xl text-center'>Carregando...</h1>
+			</div>
+		)
+	}
+
+	if (error) {
+		return (
+			<div className='flex items-center justify-between p-10'>
+				<h1 className='text-2xl text-center'>Erro: {error.message}</h1>
+			</div>
+		)
+	}
+
+	if (!product) {
+		return (
+			<div className='flex items-center justify-between p-10'>
+				<h1 className='text-2xl text-center'>Erro: Produto inválido</h1>
+			</div>
+		)
 	}
 
 	return (
 		<div className="flex justify-center my-20">
 			<div className="w-[70vw]">
 				<div className="flex gap-15">
-					<div>
-						<img src="https://placehold.co/500" />
-					</div>
+					<Carousel  opts={{ align: "start", loop: true }}>
+						<CarouselContent>
+							{
+								product.images.map((im, idx) => {
+									return (
+										<CarouselItem key={idx}>
+											<img src={im} className='w-[400px]'/>
+										</CarouselItem>
+									)
+								})
+							}
+						</CarouselContent>
+						<CarouselPrevious />
+						<CarouselNext />
+					</Carousel>
 					<div className="w-full flex flex-col space-y-4">
 						<h1 className="text-3xl font-bold">{product.name}</h1>
 						<div>
