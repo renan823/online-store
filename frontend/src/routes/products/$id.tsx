@@ -45,7 +45,7 @@ function RouteComponent() {
 		<div className="flex justify-center my-20">
 			<div className="w-[70vw]">
 				<div className="flex gap-15">
-					<Carousel  opts={{ align: "start", loop: true }}>
+					<Carousel opts={{ align: "start", loop: true }}>
 						<CarouselContent>
 							{
 								product.images.map((im, idx) => {
