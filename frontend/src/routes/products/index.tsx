@@ -48,11 +48,10 @@ function RouteComponent() {
 		<div className='space-y-4 p-2'>
 			<div className='flex justify-center'>
 				<div className='w-[50vw] flex items-center gap-5'>
-					<Input className='p-2 h-10' placeholder='Buscar items...' onChange={evt => setNameSearch(evt.target.value)} />
-					<Button size="icon" onClick={handleSearch}><Search /></Button>
+					<Input className='p-2 h-12' placeholder='Buscar items...' onChange={evt => setNameSearch(evt.target.value)} />
+					<Button className='size-12' onClick={handleSearch}><Search className='size-6' /></Button>
 				</div>
 			</div>
-			<Separator />
 			<div className='p-4 flex justify-center'>
 				<ScrollArea>
 					<div className='grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-1 gap-15'>

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { useNavigate } from "@tanstack/react-router"
 
 export function HeaderBanner() {
     return (
@@ -9,6 +10,8 @@ export function HeaderBanner() {
 }
 
 export function ProductsBanner() {
+    const navigate = useNavigate();
+
     return (
         <div className="flex w-[80vw] gap-20">
             <div className="w-[100%]">
@@ -18,7 +21,7 @@ export function ProductsBanner() {
                 <div className="space-y-4 w-1/2">
                     <h2 className="text-5xl font-bold">Produtos</h2>
                     <p className="font-bold text-xl">Conheça nossos produtos</p>
-                    <Button className="text-lg px-5 py-2">Explorar</Button>
+                    <Button onClick={() => navigate({ to: "/products" } )} className="text-lg px-5 py-2">Explorar</Button>
                 </div>
             </div>
         </div>
@@ -26,13 +29,15 @@ export function ProductsBanner() {
 }
 
 export function OfferBanner() {
+    const navigate = useNavigate();
+
     return (
         <div className="flex w-[80vw] gap-20">
             <div className="flex w-[100%] justify-center items-center">
                 <div className="space-y-4 w-1/2">
                     <h2 className="text-5xl font-bold">Ofertas</h2>
                     <p className="font-bold text-xl">Aproveite descontos imperdíveis</p>
-                    <Button className="text-lg px-5 py-2">Explorar</Button>
+                    <Button onClick={() => navigate({ to: "/products", search: { offers: true } } )} className="text-lg px-5 py-2">Explorar</Button>
                 </div>
             </div>
             <div className="w-[100%]">
