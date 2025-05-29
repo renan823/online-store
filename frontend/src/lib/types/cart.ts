@@ -1,6 +1,8 @@
-import { Product } from "@/lib/types/product";
-
 export interface CartItem {
-    product: Product;
+    productId: string;
+    name: string;
+    price: number;
+    discount: number;
+    image: string;
     quantity: number;
 }

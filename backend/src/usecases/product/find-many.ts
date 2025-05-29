@@ -16,6 +16,6 @@ export function findManyProductsUseCase(filter: ProductFilter): Product[] {
 
     const offset = filter.page * filter.limit;
     const end = offset + filter.limit;
-
+    
     return results.slice(offset, end);
 }

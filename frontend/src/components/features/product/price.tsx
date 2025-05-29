@@ -1,19 +1,50 @@
-import { cn } from "@/lib/utils";
+type ProductPriceLabelVariant = "md" | "lg";
 
-interface ProductPriceProps {
+interface ProductPriceLabelProps {
     price: number;
     discount: number;
-    size?: string;
+    variant: ProductPriceLabelVariant;
 }
 
-export function ProductPrice({ price, discount, size }: ProductPriceProps) {
-    if (discount !== 0) {
-        console.log("aplicar desconto");
-    }
+export function ProductPriceLabel({ price, discount, variant }: ProductPriceLabelProps) {
+    const hasDiscount = discount > 0;
+    const finalPrice = price - discount;
+    const discountPercent = Math.round((discount / price) * 100);
 
-    console.log(cn("font-bold", `text-${size ?? "lg"}`))
+    const sizeClasses = {
+        md: {
+            original: "text-base",
+            final: "text-xl font-bold",
+            badge: "text-sm px-2 py-0.5",
+        },
+        lg: {
+            original: "text-lg",
+            final: "text-3xl font-extrabold",
+            badge: "text-base px-3 py-1",
+        },
+    }[variant];
 
     return (
-        <h2 className={cn("font-bold", `text-${size ?? "lg"}`)}>R${price}</h2>
-    )
+        <div className="flex items-center gap-2 flex-wrap">
+            {hasDiscount ? (
+                <>
+                    <span className={`line-through text-muted-foreground ${sizeClasses.original}`}>
+                        R${price.toFixed(2)}
+                    </span>
+
+                    <span className={`bg-red-500 text-white rounded ${sizeClasses.badge}`}>
+                        -{discountPercent}%
+                    </span>
+
+                    <span className={`text-red-600 ${sizeClasses.final}`}>
+                        R${finalPrice.toFixed(2)}
+                    </span>
+                </>
+            ) : (
+                <span className={`text-foreground ${sizeClasses.final}`}>
+                    R${price.toFixed(2)}
+                </span>
+            )}
+        </div>
+    );
 }

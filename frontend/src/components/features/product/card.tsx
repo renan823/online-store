@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Product } from "@/lib/types/product";
 import { Link } from "@tanstack/react-router";
+import { ProductPriceLabel } from "@/components/features/product/price";
 
 interface ProductCardProps {
     product: Product;
@@ -17,7 +18,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     <CardTitle>{product.name}</CardTitle>
                     <CardDescription>{product.description}</CardDescription>
                     <CardDescription className="my-2">
-                        <h2 className="font-bold text-xl">R${product.price.toFixed(2)}</h2>
+                        <ProductPriceLabel discount={product.discount} price={product.price} variant="md"/>
                     </CardDescription>
                 </CardContent>
             </Card>

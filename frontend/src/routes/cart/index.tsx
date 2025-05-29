@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useCart } from '@/context/CartContext'
+import { notify } from '@/lib/notify'
 import { CartItem } from '@/lib/types/cart'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Minus, Plus, ShoppingCart } from 'lucide-react'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { Minus, PackageSearch, Plus, ShoppingCart } from 'lucide-react'
 
 export const Route = createFileRoute('/cart/')({
 	component: RouteComponent,
@@ -13,62 +13,63 @@ export const Route = createFileRoute('/cart/')({
 function RouteComponent() {
 	const navigate = useNavigate();
 
-	const item: CartItem = {
-		product: {
-			id: "12345",
-			name: "Produto exemplo",
-			description: "Um produto de muita qualidade, sem defeitos. Funciona em velocidade muito boa, é rápido.",
-			brand: "Pineapple",
-			price: 2500.50,
-			discount: 0.2,
-			image: "https://placehold.co/100",
-			stock: 3
-		},
-		quantity: 1
+	const { items, getTotal, getTotalWithDiscounts } = useCart();
+
+	if (items.length === 0) {
+		return (
+			<div className="p-8 mt-[10vw] flex flex-col items-center justify-center text-center gap-6">
+				<PackageSearch className="w-16 h-16 text-muted-foreground" />
+
+				<div>
+					<h1 className="text-2xl font-bold">Seu carrinho está vazio</h1>
+					<p className="text-muted-foreground mt-2">
+						Parece que você ainda não adicionou nada ao carrinho.
+					</p>
+				</div>
+
+				<Button asChild className="px-6 py-2 text-base">
+					<Link to="/products">Explorar produtos</Link>
+				</Button>
+			</div>
+		)
 	}
 
-	const items = [item, item, item];
-
-	// Total
-	const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0).toFixed(2);
-	const total = items.reduce((acc, item) => acc + (item.product.price -  item.product.discount * item.product.price) * item.quantity, 0).toFixed(2);
-
 	return (
-		<div className='space-y-4 p-4'>
-			<div className='flex gap-4 items-center'>
-				<ShoppingCart/>
-				<h1 className='font-bold text-xl'>Meu carrinho</h1>
+		<div className='space-y-4 p-4 flex gap-4'>
+			<div className='w-2/3'>
+				<div className="overflow-x-auto">
+					<Table className="min-w-[600px]">
+						<TableHeader>
+							<TableRow>
+								<TableHead>Produto</TableHead>
+								<TableHead className="text-center">Quantidade</TableHead>
+								<TableHead className="text-center">Preço Unitário</TableHead>
+								<TableHead className="text-center">Preço Total</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{items.map((item, index) => (
+								<CartItemRow item={item} key={index} />
+							))}
+						</TableBody>
+					</Table>
+				</div>
 			</div>
-			<Separator />
-			<div className="overflow-x-auto">
-				<Table className="min-w-[600px]">
-					<TableHeader>
-						<TableRow>
-							<TableHead>Produto</TableHead>
-							<TableHead className="text-center">Quantidade</TableHead>
-							<TableHead className="text-center">Preço Unitário</TableHead>
-							<TableHead className="text-center">Preço Total</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{items.map((item, index) => (
-							<CartItemRow item={item} key={index} />
-						))}
-					</TableBody>
-				</Table>
-			</div>
-			<Separator/>
-			<div className='flex flex-col md:flex-row justify-between items-center gap-4'>
-				<Button onClick={() => navigate({ to: "/products"})} size="lg" variant="secondary">Continuar comprando</Button>
-				<Card className='rounded-sm w-full md:w-auto'>
-					<CardContent className='flex flex-col md:flex-row items-center md:gap-20 gap-4 p-4'>
-						<div className="text-center md:text-left">
-							<p className='font-bold text-lg'>Subtotal: R$ {subtotal}</p>
-							<p className='font-bold text-lg'>Total (com descontos): R$ {total}</p>
-						</div>
-						<Button className='font-bold text-lg w-full md:w-auto'>Finalizar compra</Button>
-					</CardContent>
-				</Card>
+			<div className='w-1/3 border-l-2 p-4 space-y-4'>
+				<div className='flex gap-4 items-center'>
+					<ShoppingCart />
+					<h1 className='font-bold text-xl'>Meu carrinho</h1>
+				</div>
+				<div className='space-y-8'>
+					<div className="text-center md:text-left">
+						<p className='font-bold text-lg'>Subtotal: R$ {getTotal().toFixed(2)}</p>
+						<p className='font-bold text-lg'>Total (com descontos): R$ {getTotalWithDiscounts().toFixed(2)}</p>
+					</div>
+					<div className='flex justify-between'>
+						<Button onClick={() => navigate({ to: "/products" })} size="lg" variant="secondary">Continuar comprando</Button>
+						<Button className='font-bold'>Finalizar compra</Button>
+					</div>
+				</div>
 			</div>
 		</div>
 	)
@@ -80,32 +81,45 @@ interface CartItemCardProps {
 
 function CartItemRow({ item }: CartItemCardProps) {
 	const navigate = useNavigate();
+	const { update } = useCart();
+
+	function increaseAmount() {
+		update(item.productId, item.quantity + 1);
+	}
+
+	function decreaseAmount() {
+		update(item.productId, item.quantity - 1);
+		
+		if (item.quantity - 1 <= 0) {
+			notify.success("Removido do carrinho");
+		}
+	}
 
 	return (
 		<TableRow>
-			<TableCell 
-				onClick={() => navigate({ to: "/products/$id", params: { id: item.product.id } })} 
+			<TableCell
+				onClick={() => navigate({ to: "/products/$id", params: { id: item.productId } })}
 				className="flex items-center gap-4 cursor-pointer"
 			>
-				<img src={item.product.image} alt={item.product.name} className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md" />
-				<span className="font-semibold text-sm sm:text-base">{item.product.name}</span>
+				<img src={item.image} alt={item.name} className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md" />
+				<span className="font-semibold text-sm sm:text-base">{item.name}</span>
 			</TableCell>
 			<TableCell className="text-center">
 				<div className="flex items-center justify-center gap-2 sm:gap-4">
-					<Button variant="outline" size="icon">
+					<Button variant="outline" size="icon" onClick={decreaseAmount}>
 						<Minus />
 					</Button>
 					<p>{item.quantity}</p>
-					<Button variant="outline" size="icon">
+					<Button variant="outline" size="icon" onClick={increaseAmount}>
 						<Plus />
 					</Button>
 				</div>
 			</TableCell>
 			<TableCell className="text-center text-sm sm:text-base">
-				R$ {item.product.price.toFixed(2)}
+				R$ {item.price.toFixed(2)}
 			</TableCell>
 			<TableCell className="text-center text-sm sm:text-base">
-				R$ {(item.product.price * item.quantity).toFixed(2)}
+				R$ {(item.price * item.quantity).toFixed(2)}
 			</TableCell>
 		</TableRow>
 	)

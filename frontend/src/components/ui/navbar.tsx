@@ -1,21 +1,27 @@
 import { Link } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "@/components/ui/menubar";
+import { useCart } from "@/context/CartContext";
 
 export function Navbar() {
+    const { getTotalItems } = useCart();
+
+    const total = getTotalItems();
+
     return (
         <nav className="flex items-center justify-between p-4">
             <div className="hidden md:flex gap-6">
-                <Link className="text-white font-bold hover:text-slate-300" to="/products">
-                    <h3>Produtos</h3>
+                <Link to="/products">
+                    <h3 className="text-white font-bold hover:text-slate-300">Produtos</h3>
                 </Link>
-                   
-                <Link className="text-white font-bold hover:text-slate-300" to="/cart">
-                    <h3>Carrinho</h3>     
+
+                <Link to="/cart" className="flex jutsify-evenly items-center">
+                    <h3 className="text-white font-bold hover:text-slate-300">Carrinho</h3>
+                    {total === 0 ? <></> : <span className="ml-2 size-5 text-sm rounded-sm font-bold bg-white text-center">{total}</span>}
                 </Link>
-                   
-                <Link className="text-white font-bold hover:text-slate-300" to="/user/profile">
-                    <h3>Perfil</h3>
+
+                <Link to="/user/profile">
+                    <h3 className="text-white font-bold hover:text-slate-300">Perfil</h3>
                 </Link>
             </div>
 

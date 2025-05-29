@@ -1,8 +1,13 @@
+import { ProductPriceLabel } from '@/components/features/product/price';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { useCart } from '@/context/CartContext';
 import { notify } from '@/lib/notify';
 import { useFetchProductById } from '@/services/product.service';
 import { createFileRoute } from '@tanstack/react-router'
+import { Minus, Plus } from 'lucide-react';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/products/$id')({
 	component: RouteComponent,
@@ -12,9 +17,42 @@ function RouteComponent() {
 	const { id } = Route.useParams();
 
 	const { isLoading, error, data: product } = useFetchProductById(id);
+	const { add } = useCart();
+
+	const [quantity, setQuantity] = useState(1);
 
 	function addToCart() {
+		if (!product) {
+			return;
+		}
+		
+		add(
+			{ 
+				productId: product.id,
+				name: product.name,
+				discount: product.discount,
+				image: product.images[0],
+				price: product.price
+			},
+			quantity
+		)
 		notify.success("Adicionado ao carrinho");
+	}
+
+	function increaseAmount() {
+		if (!product) {
+			return;
+		}
+
+		if (product.quantityStock > quantity) {
+			setQuantity(quantity + 1);
+		}
+	}
+
+	function decreaseAmount() {
+		if (quantity > 0) {
+			setQuantity(quantity - 1);
+		}
 	}
 
 	if (isLoading) {
@@ -43,22 +81,27 @@ function RouteComponent() {
 
 	return (
 		<div className="flex justify-center my-20">
-			<div className="w-[70vw]">
+			<div className="w-[60vw]">
 				<div className="flex gap-15">
 					<Carousel opts={{ align: "start", loop: true }}>
 						<CarouselContent>
 							{
 								product.images.map((im, idx) => {
 									return (
-										<CarouselItem key={idx}>
-											<img src={im} className='w-[400px]'/>
+										<CarouselItem key={idx} className='w-full'>
+											<Card>
+												<CardContent>
+													<img src={im} className='w-full' />
+												</CardContent>
+											</Card>
 										</CarouselItem>
 									)
 								})
 							}
 						</CarouselContent>
-						<CarouselPrevious />
 						<CarouselNext />
+						<CarouselPrevious />
+
 					</Carousel>
 					<div className="w-full flex flex-col space-y-4">
 						<h1 className="text-3xl font-bold">{product.name}</h1>
@@ -69,9 +112,20 @@ function RouteComponent() {
 						<div>
 							<h2>Marca: {product.brand}</h2>
 						</div>
-						<div className="flex justify-between items-center mt-auto mb-5">
-							<h2 className='text-2xl font-bold'>R${product.price.toFixed(2)}</h2>
-							<Button onClick={addToCart} className="font-bold text-lg px-8 py-2">Comprar</Button>
+						<div>
+							<ProductPriceLabel discount={product.discount} price={product.price} variant="lg" />
+						</div>
+						<div className="flex justify-end gap-6 items-center mt-auto mb-5">
+							<div className="flex items-center justify-center gap-2 sm:gap-4">
+								<Button variant="outline" size="icon" onClick={decreaseAmount}>
+									<Minus />
+								</Button>
+								<p>{quantity}</p>
+								<Button variant="outline" size="icon" onClick={increaseAmount}>
+									<Plus />
+								</Button>
+							</div>
+							<Button onClick={addToCart} className="font-bold text-lg px-8 py-2">Adicionar ao carrinho</Button>
 						</div>
 					</div>
 				</div>
