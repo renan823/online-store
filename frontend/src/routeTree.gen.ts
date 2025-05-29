@@ -13,11 +13,12 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as ProductsIndexImport } from './routes/products/index'
-import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as CartIndexImport } from './routes/cart/index'
 import { Route as UserProfileImport } from './routes/user/profile'
 import { Route as UserLoginImport } from './routes/user/login'
 import { Route as ProductsIdImport } from './routes/products/$id'
+import { Route as AuthUsersImport } from './routes/_auth/users'
+import { Route as AuthDashboardImport } from './routes/_auth/dashboard'
 
 // Create/Update Routes
 
@@ -30,12 +31,6 @@ const IndexRoute = IndexImport.update({
 const ProductsIndexRoute = ProductsIndexImport.update({
   id: '/products/',
   path: '/products/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardIndexRoute = DashboardIndexImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -63,6 +58,18 @@ const ProductsIdRoute = ProductsIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthUsersRoute = AuthUsersImport.update({
+  id: '/_auth/users',
+  path: '/users',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthDashboardRoute = AuthDashboardImport.update({
+  id: '/_auth/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -72,6 +79,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/_auth/dashboard': {
+      id: '/_auth/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthDashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/_auth/users': {
+      id: '/_auth/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthUsersImport
       parentRoute: typeof rootRoute
     }
     '/products/$id': {
@@ -102,13 +123,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartIndexImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardIndexImport
-      parentRoute: typeof rootRoute
-    }
     '/products/': {
       id: '/products/'
       path: '/products'
@@ -123,32 +137,35 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof AuthDashboardRoute
+  '/users': typeof AuthUsersRoute
   '/products/$id': typeof ProductsIdRoute
   '/user/login': typeof UserLoginRoute
   '/user/profile': typeof UserProfileRoute
   '/cart': typeof CartIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/products': typeof ProductsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof AuthDashboardRoute
+  '/users': typeof AuthUsersRoute
   '/products/$id': typeof ProductsIdRoute
   '/user/login': typeof UserLoginRoute
   '/user/profile': typeof UserProfileRoute
   '/cart': typeof CartIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/products': typeof ProductsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/_auth/dashboard': typeof AuthDashboardRoute
+  '/_auth/users': typeof AuthUsersRoute
   '/products/$id': typeof ProductsIdRoute
   '/user/login': typeof UserLoginRoute
   '/user/profile': typeof UserProfileRoute
   '/cart/': typeof CartIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
   '/products/': typeof ProductsIndexRoute
 }
 
@@ -156,50 +173,55 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
+    | '/users'
     | '/products/$id'
     | '/user/login'
     | '/user/profile'
     | '/cart'
-    | '/dashboard'
     | '/products'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dashboard'
+    | '/users'
     | '/products/$id'
     | '/user/login'
     | '/user/profile'
     | '/cart'
-    | '/dashboard'
     | '/products'
   id:
     | '__root__'
     | '/'
+    | '/_auth/dashboard'
+    | '/_auth/users'
     | '/products/$id'
     | '/user/login'
     | '/user/profile'
     | '/cart/'
-    | '/dashboard/'
     | '/products/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthDashboardRoute: typeof AuthDashboardRoute
+  AuthUsersRoute: typeof AuthUsersRoute
   ProductsIdRoute: typeof ProductsIdRoute
   UserLoginRoute: typeof UserLoginRoute
   UserProfileRoute: typeof UserProfileRoute
   CartIndexRoute: typeof CartIndexRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   ProductsIndexRoute: typeof ProductsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthDashboardRoute: AuthDashboardRoute,
+  AuthUsersRoute: AuthUsersRoute,
   ProductsIdRoute: ProductsIdRoute,
   UserLoginRoute: UserLoginRoute,
   UserProfileRoute: UserProfileRoute,
   CartIndexRoute: CartIndexRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   ProductsIndexRoute: ProductsIndexRoute,
 }
 
@@ -214,16 +236,23 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/_auth/dashboard",
+        "/_auth/users",
         "/products/$id",
         "/user/login",
         "/user/profile",
         "/cart/",
-        "/dashboard/",
         "/products/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/_auth/dashboard": {
+      "filePath": "_auth/dashboard.tsx"
+    },
+    "/_auth/users": {
+      "filePath": "_auth/users.tsx"
     },
     "/products/$id": {
       "filePath": "products/$id.tsx"
@@ -236,9 +265,6 @@ export const routeTree = rootRoute
     },
     "/cart/": {
       "filePath": "cart/index.tsx"
-    },
-    "/dashboard/": {
-      "filePath": "dashboard/index.tsx"
     },
     "/products/": {
       "filePath": "products/index.tsx"

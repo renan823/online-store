@@ -1,11 +1,20 @@
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Separator } from '@/components/ui/separator'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-
-export const Route = createFileRoute('/dashboard/')({
+export const Route = createFileRoute('/_auth/dashboard')({
+	beforeLoad: ({ context, location }) => {
+		if (context.auth.user === null || context.auth.user.role !== "admin") {
+			throw redirect({
+				to: '/user/login',
+				search: {
+					redirect: location.href,
+				},
+			})
+		}
+	},
 	component: RouteComponent,
 })
 
@@ -73,7 +82,7 @@ function MonthlySalesChart() {
 								cursor={false}
 								content={<ChartTooltipContent indicator="line" />}
 							/>
-							
+
 							<Line
 								dataKey="sales"
 								type="natural"

@@ -1,7 +1,7 @@
 import { User, UserCredentials } from "@/lib/types/user";
 import { createContext, ReactNode, useContext, useState } from "react";
 
-interface AuthContextType {
+export interface AuthContextType {
     login: (credentials: UserCredentials) => void;
     logout: () => void;
     user: User | null;
@@ -17,12 +17,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null);
 
     function login(credentials: UserCredentials) {
-        setUser({
-            id: "q4234234",
-            name: "Joãozinho",
-            email: credentials.email,
-            role: "admin"
-        })
+        if (credentials.email === "admin@email.com") {
+            setUser({
+                id: "q4234234",
+                name: "Joãozinho",
+                email: credentials.email,
+                role: "admin"
+            })
+        } else {
+            setUser({
+                id: "q4234234",
+                name: "Joãozinho",
+                email: credentials.email,
+                role: "user"
+            })
+        }
     }
 
     function logout() {

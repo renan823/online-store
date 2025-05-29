@@ -1,8 +1,11 @@
+import { DeleteProductModal } from '@/components/features/product/delete';
 import { ProductPriceLabel } from '@/components/features/product/price';
+import { UpdateProductModal } from '@/components/features/product/update';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/auth';
+import { useCart } from '@/context/cart';
 import { notify } from '@/lib/notify';
 import { useFetchProductById } from '@/services/product.service';
 import { createFileRoute } from '@tanstack/react-router'
@@ -17,7 +20,9 @@ function RouteComponent() {
 	const { id } = Route.useParams();
 
 	const { isLoading, error, data: product } = useFetchProductById(id);
+
 	const { add } = useCart();
+	const { user } = useAuth();
 
 	const [quantity, setQuantity] = useState(1);
 
@@ -25,9 +30,9 @@ function RouteComponent() {
 		if (!product) {
 			return;
 		}
-		
+
 		add(
-			{ 
+			{
 				productId: product.id,
 				name: product.name,
 				discount: product.discount,
@@ -109,24 +114,41 @@ function RouteComponent() {
 							<h2>Descrição</h2>
 							<p>{product.description}</p>
 						</div>
-						<div>
+						<div className='flex gap-2'>
 							<h2>Marca: {product.brand}</h2>
+							{
+								user && user.role === "admin" ?
+									<div className='flex gap-2'>
+										<h2>Estoque: {product.quantityStock}</h2>
+										<h2>Vendidos: {product.quantitySold}</h2>
+									</div>
+									:
+									<></>
+							}
 						</div>
 						<div>
 							<ProductPriceLabel discount={product.discount} price={product.price} variant="lg" />
 						</div>
-						<div className="flex justify-end gap-6 items-center mt-auto mb-5">
-							<div className="flex items-center justify-center gap-2 sm:gap-4">
-								<Button variant="outline" size="icon" onClick={decreaseAmount}>
-									<Minus />
-								</Button>
-								<p>{quantity}</p>
-								<Button variant="outline" size="icon" onClick={increaseAmount}>
-									<Plus />
-								</Button>
-							</div>
-							<Button onClick={addToCart} className="font-bold text-lg px-8 py-2">Adicionar ao carrinho</Button>
-						</div>
+						{
+							user && user.role === "admin" ?
+								<div className="flex justify-end gap-6 items-center mt-auto mb-5">
+									<DeleteProductModal id={product.id} name={product.name}/>
+									<UpdateProductModal product={product}/>
+								</div>
+								:
+								<div className="flex justify-end gap-6 items-center mt-auto mb-5">
+									<div className="flex items-center justify-center gap-2 sm:gap-4">
+										<Button variant="outline" size="icon" onClick={decreaseAmount}>
+											<Minus />
+										</Button>
+										<p>{quantity}</p>
+										<Button variant="outline" size="icon" onClick={increaseAmount}>
+											<Plus />
+										</Button>
+									</div>
+									<Button onClick={addToCart} className="font-bold text-lg px-8 py-2">Adicionar ao carrinho</Button>
+								</div>
+						}
 					</div>
 				</div>
 			</div>

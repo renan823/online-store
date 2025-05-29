@@ -1,9 +1,10 @@
 import { Product, ProductFilter } from "@/lib/types/product";
 import { api } from "./api";
 import { useQuery } from "@tanstack/react-query";
+import { Pagination } from "@/lib/utils";
 
-export async function fetchProducts(filter: ProductFilter): Promise<Product[]> {
-    const response = await api.get<Product[]>('/products', { params: filter });
+export async function fetchProducts(filter: ProductFilter): Promise<Pagination<Product>> {
+    const response = await api.get<Pagination<Product>>('/products', { params: filter });
     if (response.status !== 200) {
         throw new Error("Failed to fetch products!");
     }
@@ -13,7 +14,7 @@ export async function fetchProducts(filter: ProductFilter): Promise<Product[]> {
 
 export function useFetchProducts(params: ProductFilter) {
     return useQuery({
-        queryKey: ["products", params.page, params.limit],
+        queryKey: ["products", params],
         queryFn: () => fetchProducts(params)
     })
 }

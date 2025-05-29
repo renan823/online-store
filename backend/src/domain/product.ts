@@ -12,12 +12,21 @@ export type Product = {
     images: string[];
 }
 
-export const CreateProductSchema = z.object({
-    name: z.string(),
-    description: z.string(),
-    quantityStock: z.number().min(0).default(0),
-    brand: z.string(),
-})
+export type ProductFilter = z.infer<typeof ProductFilterSchema>;
+
+export type CreateProductDTO = {
+    name: string;
+    description: string;
+    quantityStock: number;
+    price: number;
+    brand: string;
+    discount: number;
+    images: string[];
+};
+
+export type UpdateProductDTO = Partial<CreateProductDTO> & {
+    id: string;
+};
 
 export const ProductFilterSchema = z.object({
     page: z.number().optional().default(0),
@@ -26,4 +35,16 @@ export const ProductFilterSchema = z.object({
     offers: z.boolean().optional().default(false),
 })
 
-export type ProductFilter = z.infer<typeof ProductFilterSchema>;
+export const CreateProductSchema = z.object({
+    name: z.string(),
+    description: z.string(),
+    quantityStock: z.number(),
+    price: z.number(),
+    brand: z.string(),
+    discount: z.number(),
+    images: z.array(z.string())
+});
+
+export const UpdateProductSchema = CreateProductSchema.partial().extend({
+    id: z.string(),
+});

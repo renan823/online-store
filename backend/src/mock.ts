@@ -1,6 +1,6 @@
 import { Product } from "./domain/product";
 
-export const products: Product[] = [
+export let products: (Product & { deleted?: boolean })[] = [
     {
         id: "1",
         name: "Smartphone Galaxy S21",

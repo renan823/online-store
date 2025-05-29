@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "@/components/ui/menubar";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cart";
+import { useAuth } from "@/context/auth";
 
 export function Navbar() {
     const { getTotalItems } = useCart();
+    const { user } = useAuth();
 
     const total = getTotalItems();
 
@@ -15,10 +17,17 @@ export function Navbar() {
                     <h3 className="text-white font-bold hover:text-slate-300">Produtos</h3>
                 </Link>
 
-                <Link to="/cart" className="flex jutsify-evenly items-center">
-                    <h3 className="text-white font-bold hover:text-slate-300">Carrinho</h3>
-                    {total === 0 ? <></> : <span className="ml-2 size-5 text-sm rounded-sm font-bold bg-white text-center">{total}</span>}
-                </Link>
+                {
+                    user && user.role === "admin" ?
+                        <Link to="/users">
+                            <h3 className="text-white font-bold hover:text-slate-300">Usuários</h3>
+                        </Link>
+                        :
+                        <Link to="/cart" className="flex jutsify-evenly items-center">
+                            <h3 className="text-white font-bold hover:text-slate-300">Carrinho</h3>
+                            {total === 0 ? <></> : <span className="ml-2 size-5 text-sm rounded-sm font-bold bg-white text-center">{total}</span>}
+                        </Link>
+                }
 
                 <Link to="/user/profile">
                     <h3 className="text-white font-bold hover:text-slate-300">Perfil</h3>

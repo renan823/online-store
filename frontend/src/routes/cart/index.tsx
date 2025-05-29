@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useCart } from '@/context/CartContext'
+import { useCart } from '@/context/cart'
 import { notify } from '@/lib/notify'
 import { CartItem } from '@/lib/types/cart'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'

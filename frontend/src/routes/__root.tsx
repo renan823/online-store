@@ -1,8 +1,15 @@
 import { Navbar } from "@/components/ui/navbar";
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { AuthContextType } from "@/context/auth";
+import { CartContextType } from "@/context/cart";
+import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
 import { Toaster } from "sonner";
 
-export const Route = createRootRoute({
+interface RouterContext {
+    auth: AuthContextType;
+    cart: CartContextType;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
     component: () => {
         return (
             <>
