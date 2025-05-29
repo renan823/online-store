@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 
-interface NavItem {
+export interface NavItem {
   id: string;
   label: string;
   icon?: React.ElementType;

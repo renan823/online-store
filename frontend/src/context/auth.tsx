@@ -35,7 +35,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     function logout() {
-        console.log("logout");
+        setUser(null);
     }
 
     return (
