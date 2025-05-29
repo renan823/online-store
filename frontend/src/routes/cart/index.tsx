@@ -1,3 +1,4 @@
+import { CheckoutModal } from '@/components/features/cart/checkout'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useCart } from '@/context/cart'
@@ -67,7 +68,7 @@ function RouteComponent() {
 					</div>
 					<div className='flex justify-between'>
 						<Button onClick={() => navigate({ to: "/products" })} size="lg" variant="secondary">Continuar comprando</Button>
-						<Button className='font-bold'>Finalizar compra</Button>
+						<CheckoutModal/>
 					</div>
 				</div>
 			</div>
