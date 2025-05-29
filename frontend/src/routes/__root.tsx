@@ -17,14 +17,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
                     <Link to="/">
                         <div className="flex items-center gap-2">
                             <img src="/favicon.ico" className="size-12" />
-                            <h2 className="font-bold text-xl text-white">Loja de eletrônicos</h2>
+                            <h2 className="font-bold text-xl text-white">CR Tech</h2>
                         </div>
                     </Link>
                     <Navbar />
                 </header>
                 <main className="p-6">
                     <Outlet />
-                </main>
+                </main>3
                 <Toaster />
             </>
         )
