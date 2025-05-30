@@ -85,6 +85,17 @@ Para executar teste do backend, plataformas como Postman e Insomnia podem ser ú
 ## Instalação e execução
 Clone este reposiório. </br>
 <br/>
+Backend (rodando em localhost:3000):</br>
+```
+cd backend/
+```
+```
+bun install
+```
+```
+bun run dev
+```
+<br/>
 Frontend (rodando em localhost:5173):</br>
 ```
 cd frontend/
