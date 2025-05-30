@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/auth'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react';
-
+import { OrdersPage } from '@/components/features/user/ordersPage'; 
 export const Route = createFileRoute('/user/profile')({
 	beforeLoad: ({ context, location }) => {
 		if (context.auth.user === null) {
@@ -89,7 +89,7 @@ function RouteComponent() {
 									<Input
 										id="name"
 										type="text"
-										placeholder="Seu nome completo"
+										placeholder="José Oliveira da Silva"
 										value={name}
 										onChange={handleChangeName}
 									/>
@@ -110,7 +110,7 @@ function RouteComponent() {
 								<Input
 									id="email"
 									type="email"
-									placeholder="seuemail@exemplo.com"
+									placeholder="email@exemplo.com"
 									value={email}
 									onChange={handleChangeEmail}
 								/>
@@ -120,7 +120,7 @@ function RouteComponent() {
 								<Input
 									id="address"
 									type="text"
-									placeholder="Sua rua, número, bairro..."
+									placeholder=" Avenida Trabalhador são-carlense, 400 - Parque Arnold Schimidt"
 									value={address}
 									onChange={handleChangeAddress}
 								/>
@@ -133,9 +133,7 @@ function RouteComponent() {
 						</form>
 					)}
 					{activeSection === "pedidos" && (
-						<div className="text-center p-10 bg-card rounded-lg">
-							<h2 className="text-2xl font-semibold mb-4">Meus Pedidos</h2>
-						</div>
+						<OrdersPage/>
 					)}
 					{activeSection === "pagamento" && (
 						<div className="text-center p-10 bg-card rounded-lg">
