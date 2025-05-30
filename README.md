@@ -97,6 +97,7 @@ bun run dev
 ```
 <br/>
 Frontend (rodando em localhost:5173):</br>
+
 ```
 cd frontend/
 ```
