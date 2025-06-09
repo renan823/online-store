@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { AuthContextType } from "@/context/auth";
 import { CartContextType } from "@/context/cart";
-import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { Toaster } from "sonner";
 
 interface RouterContext {
@@ -13,18 +13,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     component: () => {
         return (
             <>
-                <header className="flex justify-between items-center py-1 px-6 bg-rose-600">
-                    <Link to="/">
-                        <div className="flex items-center gap-2">
-                            <img src="/favicon.ico" className="size-12" />
-                            <h2 className="font-bold text-xl text-white">CR Tech</h2>
-                        </div>
-                    </Link>
+                <header className="px-10">
                     <Navbar />
                 </header>
-                <main className="p-6">
+                <main className="py-6 px-10">
                     <Outlet />
-                </main>3
+                </main>
                 <Toaster />
             </>
         )

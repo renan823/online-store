@@ -1,37 +1,52 @@
 import { Pagination } from "../../domain/pagination";
 import { Product, ProductFilter } from "../../domain/product";
-import { products } from "../../mock";
+import { ProductModel } from "../../models/product";
 
-export function findManyProductsUseCase(filter: ProductFilter): Pagination<Product> {
-	let results: Product[] = [];
+// Caso de uso: buscar produtos pelo filtro
+export async function findManyProductsUseCase(filter: ProductFilter): Promise<Pagination<Product>> {
+	// Cria uma query e adiciona filtros (se tiver)
+	const query: any = { deleted: false };
 
-	if (filter.search !== undefined && filter.search.trim() !== "") {
-		results = products.filter(p =>
-			p.name.toLowerCase().includes(filter.search!.toLowerCase())
-		);
-	} else {
-		results = products;
+	// Filtro de busca (texto no nome - ignora upperCase etc)
+	if (filter.search && filter.search.trim() !== "") {
+		query.name = { $regex: filter.search.trim(), $options: "i" };
 	}
 
+	// Filtro de ofertas (desconto > 0)
 	if (filter.offers) {
-		results = results.filter(p => p.discount > 0);
+		query.discount = { $gt: 0 };
 	}
 
-	const total = results.length;
-	const limit = filter.limit;
-	const page = filter.page;
+	const page = filter.page || 0;
+	const limit = filter.limit || 10;
+	const skip = page * limit;
 
-	const pages = Math.ceil(total / limit);
-	const offset = page * limit;
-	const items = results.slice(offset, offset + limit);
+	// Consulta e paginação
+	const [items, total] = await Promise.all([
+		ProductModel.find(query).skip(skip).limit(limit).lean(),
+		ProductModel.countDocuments(query),
+	]);
+
+	// Mapeia resultados
+	const products: Product[] = items.map((p) => ({
+		id: p.id,
+		name: p.name,
+		price: p.price,
+		discount: p.discount,
+		brand: p.brand,
+		description: p.description,
+		images: p.images.length === 0 ? ["https://placehold.co/600x400/gray/white"] : p.images,
+		quantitySold: p.quantitySold,
+		quantityStock: p.quantityStock
+	}));
 
 	return {
-		items,
+		items: products,
 		meta: {
 			page,
 			limit,
 			total,
-			pages,
+			pages: Math.ceil(total / limit),
 		},
 	};
 }

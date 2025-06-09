@@ -95,25 +95,6 @@ function UsersListPage() {
 
     return (
         <div className="p-6 md:p-8 bg-background text-foreground">
-            {/* Barra Superior do Painel do Administrador */}
-            <div className="mb-6 p-4 bg-card rounded-lg shadow">
-                <h1 className="text-3xl font-bold text-center text-primary">Painel do Administrador</h1>
-                <nav className="mt-4 flex justify-center space-x-4 md:space-x-6">
-                    <Button variant="link" onClick={() => navigate({ to: '/dashboard' })} className="text-foreground hover:text-primary">
-                        Dashboard
-                    </Button>
-                    <Button variant="link" className="text-primary font-semibold"> {/* Destaca a página atual */}
-                        Gerenciar usuários
-                    </Button>
-                    <Button variant="link" onClick={() => console.log("Nav to Pedidos Admin")} className="text-foreground hover:text-primary">
-                        Pedidos
-                    </Button>
-                     <Button variant="link" onClick={() => console.log("Nav to Gerenciar Produtos")} className="text-foreground hover:text-primary">
-                        Gerenciar Produtos
-                    </Button>
-                </nav>
-            </div>
-
             {/* Seção da Lista de Usuários */}
             <div className="bg-card p-6 rounded-lg shadow">
                 <h2 className="text-2xl font-semibold mb-6">Lista de Usuários</h2>

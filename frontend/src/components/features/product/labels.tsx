@@ -1,3 +1,5 @@
+import { Ban, Flame, Stars } from "lucide-react";
+
 type ProductPriceLabelVariant = "md" | "lg";
 
 interface ProductPriceLabelProps {
@@ -8,8 +10,7 @@ interface ProductPriceLabelProps {
 
 export function ProductPriceLabel({ price, discount, variant }: ProductPriceLabelProps) {
     const hasDiscount = discount > 0;
-    const finalPrice = price - discount;
-    const discountPercent = Math.round((discount / price) * 100);
+    const finalPrice = price - (price * discount / 100);
 
     const sizeClasses = {
         md: {
@@ -32,11 +33,11 @@ export function ProductPriceLabel({ price, discount, variant }: ProductPriceLabe
                         R${price.toFixed(2)}
                     </span>
 
-                    <span className={`bg-red-500 text-white rounded ${sizeClasses.badge}`}>
-                        -{discountPercent}%
+                    <span className={`bg-rose-500 text-white rounded ${sizeClasses.badge}`}>
+                        -{discount}%
                     </span>
 
-                    <span className={`text-red-600 ${sizeClasses.final}`}>
+                    <span className={`text-black ${sizeClasses.final}`}>
                         R${finalPrice.toFixed(2)}
                     </span>
                 </>
@@ -47,4 +48,41 @@ export function ProductPriceLabel({ price, discount, variant }: ProductPriceLabe
             )}
         </div>
     );
+}
+
+interface ProductLastUnitsLabelProps {
+    quantity: number;
+}
+
+export function ProductLastUnitsLabel({ quantity }: ProductLastUnitsLabelProps) {
+    if (quantity > 10) {
+        return (
+            <></>
+        )
+    }
+
+    if (quantity === 0) {
+        return (
+            <div className="flex gap-1 items-center">
+                <Ban className="text-rose-600/80"/>
+                <h3 className="font-bold">Fora de estoque</h3>
+            </div>
+        )
+    }
+
+    if (quantity === 1) {
+        return (
+            <div className="flex gap-1 items-center">
+                <Stars className="text-rose-600/80"/>
+                <h3 className="font-bold">Última unidade</h3>
+            </div>
+        )
+    }
+
+    return (
+        <div className="flex gap-1 items-center">
+            <Flame className="text-rose-600/80"/>
+            <h3 className="font-bold">Últimas {quantity} unidades</h3>
+        </div>
+    )
 }

@@ -10,25 +10,23 @@ import { createProductUseCase } from '../usecases/product/create';
 import { updateProductUseCase } from '../usecases/product/update';
 import { deleteProductUseCase } from '../usecases/product/delete';
 
+import { zValidator } from '@hono/zod-validator';
+
+// Roteador 
 const productsRouter = new Hono().basePath('/products');
 
-// List products with filters
-productsRouter.get('/', (c) => {
-    const filter = ProductFilterSchema.parse({
-        search: c.req.query('search') ?? undefined,
-        offers: c.req.query('offers') === 'true',
-        page: parseInt(c.req.query('page') ?? '0'),
-        limit: parseInt(c.req.query('limit') ?? '10'),
-    });
+// Buscar produtos com filtros (paginação, etc)
+productsRouter.get('/', zValidator("query", ProductFilterSchema), async (c) => {
+    const filter = c.req.valid("query");
 
-    const products = findManyProductsUseCase(filter);
+    const products = await findManyProductsUseCase(filter);
     return c.json(products, 200);
 });
 
-// Get product by ID
-productsRouter.get('/:id', (c) => {
+// Buscar produtos por id
+productsRouter.get('/:id', async (c) => {
     const id = c.req.param('id');
-    const product = findProductByIdUseCase(id);
+    const product = await findProductByIdUseCase(id);
 
     if (!product || (product as any).deleted) {
         return c.json({ product: null }, 404);
@@ -37,22 +35,19 @@ productsRouter.get('/:id', (c) => {
     return c.json(product, 200);
 });
 
-// Create new product
-productsRouter.post('/new', async (c) => {
-    const body = await c.req.json();
-    const data = CreateProductSchema.parse(body);
+// Criar novo produto
+productsRouter.post('/new', zValidator("json", CreateProductSchema),  async (c) => {
+    const data = c.req.valid("json");
 
-    const created = createProductUseCase(data);
+    const created = await createProductUseCase(data);
     return c.json(created, 201);
 });
 
-// Update product
-productsRouter.put('/:id', async (c) => {
-    const id = c.req.param('id');
-    const body = await c.req.json();
-    const data = UpdateProductSchema.parse({ ...body, id });
+// Atualizar dados de um produto (por id)
+productsRouter.put('/', zValidator("json", UpdateProductSchema), async (c) => {
+    const data = c.req.valid("json");
 
-    const updated = updateProductUseCase(data);
+    const updated = await updateProductUseCase(data);
     if (!updated) {
         return c.json({ error: 'Product not found or deleted' }, 404);
     }
@@ -60,16 +55,16 @@ productsRouter.put('/:id', async (c) => {
     return c.json(updated, 200);
 });
 
-// Soft delete product
-productsRouter.delete('/:id', (c) => {
+// Soft delete do produto (por id)
+productsRouter.delete('/:id', async (c) => {
     const id = c.req.param('id');
 
-    const success = deleteProductUseCase(id);
+    const success = await deleteProductUseCase(id);
     if (!success) {
         return c.json({ error: 'Product not found or already deleted' }, 404);
     }
 
-    return c.json({ message: 'Product deleted' }, 200);
+    return c.json(success, 200);
 });
 
 export default productsRouter;

@@ -1,13 +1,31 @@
 import { Product, UpdateProductDTO } from "../../domain/product";
-import { products } from "../../mock";
+import { ProductModel } from "../../models/product";
 
-export function updateProductUseCase(data: UpdateProductDTO): Product | null {
-    const index = products.findIndex(p => p.id === data.id && !p.deleted);
+// Caso de uso: atualizar dados do produto
+export async function updateProductUseCase(data: UpdateProductDTO): Promise<Product | null> {
+    const { id, ...updateFields } = data;
 
-    if (index === -1) return null;
+    const updated = await ProductModel.findOneAndUpdate(
+        { id: id, deleted: { $ne: true } },
+        { $set: updateFields },
+        { new: true, lean: true }
+    );
 
-    const updatedProduct = { ...products[index], ...data };
-    products[index] = updatedProduct;
+    if (!updated) {
+        return null;
+    };
 
-    return updatedProduct;
+    const product: Product = {
+        id: updated.id,
+		name: updated.name,
+		price: updated.price,
+		discount: updated.discount,
+		brand: updated.brand,
+		description: updated.description,
+		images: updated.images,
+		quantitySold: updated.quantitySold,
+		quantityStock: updated.quantityStock
+    };
+
+    return product;
 }

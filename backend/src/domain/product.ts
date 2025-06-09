@@ -1,5 +1,7 @@
 import z from "zod";
 
+// Definição dos tipos e validadores do Product
+
 export type Product = {
     id: string;
     name: string;
@@ -29,11 +31,27 @@ export type UpdateProductDTO = Partial<CreateProductDTO> & {
 };
 
 export const ProductFilterSchema = z.object({
-    page: z.number().optional().default(0),
-    limit: z.number().optional().default(15),
+    page: z
+        .string()
+        .optional()
+        .transform((val) => (val ? Number(val) : 0))
+        .refine((val) => !isNaN(val), { message: "page must be an integer" }),
+
+    limit: z
+        .string()
+        .optional()
+        .transform((val) => (val ? Number(val) : 15))
+        .refine((val) => !isNaN(val), { message: "limit must be an integer" }),
+
     search: z.string().optional(),
-    offers: z.boolean().optional().default(false),
-})
+
+    offers: z
+        .string()
+        .optional()
+        .transform((val) => val === "true")
+        .default("false")
+        .pipe(z.boolean()),
+});
 
 export const CreateProductSchema = z.object({
     name: z.string(),

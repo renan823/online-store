@@ -1,11 +1,12 @@
 import { CheckoutModal } from '@/components/features/cart/checkout'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useAuth } from '@/context/auth'
 import { useCart } from '@/context/cart'
 import { notify } from '@/lib/notify'
 import { CartItem } from '@/lib/types/cart'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { Minus, PackageSearch, Plus, ShoppingCart } from 'lucide-react'
+import { CreditCard, Minus, PackageSearch, Plus, ShoppingCart } from 'lucide-react'
 
 export const Route = createFileRoute('/cart/')({
 	component: RouteComponent,
@@ -15,6 +16,12 @@ function RouteComponent() {
 	const navigate = useNavigate();
 
 	const { items, getTotal, getTotalWithDiscounts } = useCart();
+
+	const { user } = useAuth();
+
+	function redirectLoging() {
+		navigate({ to: "/user/login", search: { redirect: "/cart"}})
+	}
 
 	if (items.length === 0) {
 		return (
@@ -68,7 +75,15 @@ function RouteComponent() {
 					</div>
 					<div className='flex justify-between'>
 						<Button onClick={() => navigate({ to: "/products" })} size="lg" variant="secondary">Continuar comprando</Button>
-						<CheckoutModal/>
+						{
+							user !== null ?
+								<CheckoutModal />
+								:
+								<Button onClick={redirectLoging} className="flex items-center gap-2">
+									<CreditCard className="w-4 h-4" />
+									Finalizar Compra
+								</Button>
+						}
 					</div>
 				</div>
 			</div>
@@ -90,7 +105,7 @@ function CartItemRow({ item }: CartItemCardProps) {
 
 	function decreaseAmount() {
 		update(item.productId, item.quantity - 1);
-		
+
 		if (item.quantity - 1 <= 0) {
 			notify.success("Removido do carrinho");
 		}

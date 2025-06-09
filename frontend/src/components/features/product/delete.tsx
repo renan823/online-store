@@ -1,17 +1,30 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import { useDeleteFiles } from '@/services/cdn.service';
+import { useDeleteProduct } from '@/services/product.service';
+import { filenameSplit } from '@/lib/utils';
 
 interface DeleteProductModalProps {
-    name: string
-    id: string
+    name: string;
+    id: string;
+    images: string[];
 }
 
-export function DeleteProductModal({ name, id }: DeleteProductModalProps) {
+export function DeleteProductModal({ name, id, images }: DeleteProductModalProps) {
     const [open, setOpen] = useState(false);
 
-    const handleDelete = () => {
-        console.log(`Produto ${name} (ID: ${id}) deletado.`);
+    const deleteFiles = useDeleteFiles();
+    const deleteProduct = useDeleteProduct();
+
+    function handleDelete() {
+        const files = images.map(img => filenameSplit(img));
+
+        console.log(files)
+
+        deleteFiles.mutate(files);
+        deleteProduct.mutate(id);
+
         setOpen(false);
     }
 

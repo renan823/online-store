@@ -1,3 +1,5 @@
+// Definição do tipo Pagination
+
 export interface Pagination<T> {
 	items: T[];
 	meta: {

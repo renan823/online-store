@@ -1,10 +1,11 @@
-import { products } from "../../mock";
+import { ProductModel } from "../../models/product";
 
-export function deleteProductUseCase(id: string): boolean {
-    const index = products.findIndex(p => p.id === id && !p.deleted);
+// Caso de uso: remover produto (soft delete)
+export async function deleteProductUseCase(id: string): Promise<boolean> {
+    const result = await ProductModel.findOneAndUpdate(
+        { id, deleted: { $ne: true } }, 
+        { $set: { deleted: true } }
+    );
 
-    if (index === -1) return false;
-
-    products[index].deleted = true;
-    return true;
+    return result !== null;
 }
