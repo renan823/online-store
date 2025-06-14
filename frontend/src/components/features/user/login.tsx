@@ -3,7 +3,7 @@ import ControlledFieldError, { ControlledEmailInput, ControlledPasswordInput } f
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/context/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "@tanstack/react-router"
+import { Link, useRouter, useSearch } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
 import z from "zod"
 
@@ -19,6 +19,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ redirect }: LoginFormProps) {
+    const searchParams = useSearch({from: "/user/login"})
     const {
         control,
         handleSubmit,
@@ -56,7 +57,7 @@ export function LoginForm({ redirect }: LoginFormProps) {
                                 <ControlledEmailInput
                                     name="email"
                                     control={control}
-                                    placeholder="abc@examplo.com"
+                                    placeholder="abc@exemplo.com"
                                     value=""
                                 />
                                 <ControlledFieldError error={errors.email} />
@@ -67,14 +68,21 @@ export function LoginForm({ redirect }: LoginFormProps) {
                                 <ControlledPasswordInput
                                     name="password"
                                     control={control}
+                                    placeholder="***********"
                                 />
                                 <ControlledFieldError error={errors.password} />
                             </div>
 
 
-                            <Button type="submit" className="w-full" disabled={isSubmitting}>
-                                {isSubmitting ? 'Entrando...' : 'Login'}
-                            </Button>
+                            <div className="flex flex-col items-center justify-center">
+                                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                                    {isSubmitting ? 'Entrando...' : 'Login'}
+                                </Button>
+                                <span className="m-3 text-sm">
+                                    Não possui uma conta?
+                                    <Link className="font-bold text-primary hover:text-rose-400" to="/user/register" search={{redirect: searchParams.redirect}}> Cadastre-se</Link>
+                                </span>
+                            </div>
                         </div>
                     </form>
                 </div>

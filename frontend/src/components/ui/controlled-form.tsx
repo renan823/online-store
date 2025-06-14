@@ -89,17 +89,18 @@ export function ControlledEmailInput({ name, control, placeholder, value }: Cont
 interface ControlledPasswordInputProps {
     name: string;
     control: Control<any>;
+    placeholder: string;
     value?: string;
 }
 
-export function ControlledPasswordInput({ name, control, value }: ControlledPasswordInputProps) {
+export function ControlledPasswordInput({ name, control, placeholder, value }: ControlledPasswordInputProps) {
     return (
         <Controller
             name={name}
             defaultValue={value}
             control={control}
             render={({ field }) => (
-                <Input type="password" {...field} autoComplete="off" />
+                <Input placeholder={placeholder} type="password" {...field} autoComplete="off" />
             )}
         />
     )
