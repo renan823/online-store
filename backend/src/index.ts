@@ -6,7 +6,7 @@ import { logger } from 'hono/logger'
 
 import mongoose from 'mongoose';
 import analyticsRouter from './handlers/analitycs.handler';
-
+import ordersRouter from './handlers/order.handler'; 
 const app = new Hono();
 
 // Iniciar mongoose
@@ -14,7 +14,6 @@ const app = new Hono();
 	await mongoose.connect(`mongodb://localhost:27017/web`, { authSource: "admin", auth: { username: "root", password: "root" } });
 })();
 
-// Ativando CORS globalmente
 app.use(
 	'*',
 	cors({
@@ -28,7 +27,7 @@ app.use(logger());
 
 app.route('/', productsRouter);
 app.route('/', analyticsRouter);
-
+app.route('/', ordersRouter); 
 // app.get('/users/');
 // app.get('/users/:id');
 // app.post('/users/new');
