@@ -37,7 +37,7 @@ export function ControlledCheckbox({ name, control, value }: ControlledCheckboxP
             defaultValue={value}
             render={({ field }) => (
                 <Checkbox
-                    className="size-5"
+                    className="border-1 border-solid border-primary size-5"
                     checked={field.value}
                     onCheckedChange={field.onChange}
                 />

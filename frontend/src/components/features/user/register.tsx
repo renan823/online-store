@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button"
 import ControlledFieldError, { ControlledEmailInput, ControlledPasswordInput, ControlledTextInput } from "@/components/ui/controlled-form"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/context/auth"
-import { CreateUserDTO } from "@/lib/types/user"
-import { useCreateUser } from "@/services/user.service"
+import { RegisterUserDTO } from "@/lib/types/user"
+import { useRegisterUser } from "@/services/user.service"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Link, useRouter, useSearch } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
@@ -34,7 +34,7 @@ interface RegisterFormProps {
 
 export function RegisterForm({ redirect }: RegisterFormProps) {
     const searchParams = useSearch({from: "/user/register"})
-    const createUser = useCreateUser()
+    const createUser = useRegisterUser()
     const {
         control,
         handleSubmit,
@@ -47,7 +47,7 @@ export function RegisterForm({ redirect }: RegisterFormProps) {
     const router = useRouter();
 
     async function onSubmit(data: RegisterFormValues) {
-        const payload: CreateUserDTO = {
+        const payload: RegisterUserDTO = {
             name: data.name,
             address: data.address,
             phone: data.phone,

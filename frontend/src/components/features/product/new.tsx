@@ -86,7 +86,7 @@ export function NewProductModal() {
                                 <ControlledFieldError error={errors.description} />
                             </div>
                             <div>
-                                <Label>Qauntidade</Label>
+                                <Label>Quantidade</Label>
                                 <ControlledNumberInput name="quantityStock" control={control} />
                                 <ControlledFieldError error={errors.quantityStock} />
                             </div>
