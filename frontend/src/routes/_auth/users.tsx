@@ -4,32 +4,12 @@ import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Ban, Search, PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { Ban, Search } from 'lucide-react';
 import { useState } from 'react';
-
-const mockUsers = [
-    {
-        id: "101",
-        name: "Joao Silva",
-        email: "joao@email.com",
-        phone: "(11) 9999-8888",
-        type: "Cliente",
-    },
-    {
-        id: "102",
-        name: "Fernanda Souza",
-        email: "fernanda@email.com",
-        phone: "(32) 3333-2222",
-        type: "Admin",
-    },
-    {
-        id: "103",
-        name: "Carlos Pereira",
-        email: "carlos@example.com",
-        phone: "(21) 7777-6666",
-        type: "Cliente",
-    },
-];
+import { NewUserModal } from '@/components/features/user/new';
+import { DeleteUserModal } from '@/components/features/user/delete';
+import { UpdateUserModal } from '@/components/features/user/update';
+import { useFetchUsers } from '@/services/user.service';
 
 export const Route = createFileRoute('/_auth/users')({
     beforeLoad: ({ context, location }) => {
@@ -55,6 +35,9 @@ function UsersListPage() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
 
+    //Fetch users
+	const { isLoading, error, data: users } = useFetchUsers();
+
     if (user?.role !== "admin") {
         return (
             <div className="flex flex-col items-center justify-center h-80 p-10 text-red-500">
@@ -69,28 +52,26 @@ function UsersListPage() {
             </div>
         );
     }
+    
+    // Render loading/error state
+	if (isLoading || error || users == undefined) {
+		return (
+			<div className="flex items-center justify-center p-10">
+				<h1 className="text-2xl text-center">
+					{isLoading
+						? 'Carregando...'
+						: error
+							? `Erro: ${error.message}`
+							: 'Erro: Usuário inválido'}
+				</h1>
+			</div>
+		);
+    }
 
-    const filteredUsers = mockUsers.filter(u =>
+    const filteredUsers = users?.filter(u =>
         u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         u.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    const handleAddNewUser = () => {
-        console.log("Redirecionar para formulário de novo usuário ou abrir modal.");
-        // Ex: navigate({ to: '/_auth/users/new' }); // Se tiver uma rota dedicada
-        // Ou abrir um Dialog/Modal para adicionar usuário
-    };
-
-    const handleEditUser = (userId: string) => {
-        console.log(`Editar usuário com ID: ${userId}`);
-        // Ex: navigate({ to: `/_auth/users/${userId}/edit` });
-        // Ou abrir um Dialog/Modal para editar usuário
-    };
-
-    const handleDeleteUser = (userId: string) => {
-        console.log(`Excluir usuário com ID: ${userId}`);
-        // Implementar lógica de exclusão, talvez com confirmação
-    };
 
 
     return (
@@ -112,10 +93,7 @@ function UsersListPage() {
                             <Search className="h-5 w-5" />
                         </Button>
                     </div>
-                    <Button onClick={handleAddNewUser} className="w-full md:w-auto bg-primary hover:bg-primary/90">
-                        <PlusCircle className="mr-2 h-5 w-5" />
-                        Adicionar usuário
-                    </Button>
+                    <NewUserModal/>
                 </div>
 
                 <div className="border rounded-lg overflow-hidden">
@@ -137,14 +115,10 @@ function UsersListPage() {
                                     <TableCell>{u.name}</TableCell>
                                     <TableCell>{u.email}</TableCell>
                                     <TableCell className="hidden md:table-cell">{u.phone}</TableCell>
-                                    <TableCell className="text-center">{u.type}</TableCell>
+                                    <TableCell className="text-center">{u.role.toUpperCase()}</TableCell>
                                     <TableCell className="text-center space-x-2">
-                                        <Button variant="outline" size="sm" onClick={() => handleEditUser(u.id)} className="hover:border-primary hover:text-primary">
-                                            <Edit className="h-4 w-4 mr-1 md:mr-0" /> <span className="hidden md:inline">Editar</span>
-                                        </Button>
-                                        <Button variant="outline" size="sm" onClick={() => handleDeleteUser(u.id)} className="hover:border-destructive hover:text-destructive">
-                                            <Trash2 className="h-4 w-4 mr-1 md:mr-0" /> <span className="hidden md:inline">Excluir</span>
-                                        </Button>
+                                        <UpdateUserModal id={u.id}/>
+                                        <DeleteUserModal id={u.id}/>
                                     </TableCell>
                                 </TableRow>
                             ))}

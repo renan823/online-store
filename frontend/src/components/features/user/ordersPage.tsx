@@ -1,29 +1,9 @@
 // frontend/src/components/features/user/orders-page.tsx
 import { Badge } from "@/components/features/user/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-const mockOrders = [
-    {
-        id: "1",
-        value: 4900.00,
-        productDetails: "Notebook Gamer Acer Nitro V15 ANV15-51-7837 Intel Core i7, 16GB RAM, DDR5, Nvidia RTX 3050, 512GB SSD, 15.6” Linux, Preto - NH.QDDAL.008",
-        status: "Entregue",
-    },
-    {
-        id: "2",
-        value: 3299.00,
-        productDetails: "Notebook Acer Aspire 5 AMD Ryzen7-5700U, 16GB RAM, SSD 512GB, 15.6” FHD IPS, AMD Radeon, Linux, Prata - A515-45-R74N",
-        status: "Cancelado",
-    },
-    {
-        id: "3",
-        value: 199.99,
-        productDetails: "Headset Gamer Sem Fio Havit Fuxi H3, 7.1 surround, Driver 40mm, Bluetooth e USB, Preto - Fuxi--H3 Black",
-        status: "Transporte",
-    },
-];
-
-type OrderStatus = "Entregue" | "Cancelado" | "Transporte" | "Pendente";
+import { Order, OrderStatus } from "@/lib/types/user";
+import { useFetchOrdersById } from "@/services/user.service";
+import { useState } from "react";
 
 function getStatusBadgeVariant(status: OrderStatus): "default" | "destructive" | "secondary" | "outline" {
     switch (status) {
@@ -56,7 +36,28 @@ function getStatusBadgeColors(status: OrderStatus): string {
 }
 
 
-export function OrdersPage() {
+type UserId  = {
+    id: string
+}
+export function OrdersPage({ id }: UserId) {
+    const [orders, setOrders] = useState<Order[]>([])
+    const { isLoading, error, data } = useFetchOrdersById(id)
+    if(data) setOrders(data)
+
+	if (isLoading || error || !orders) {
+		return (
+            <div className="flex items-center justify-center p-10">
+			    <h1 className="text-2xl text-center">
+				    {isLoading
+					    ? 'Carregando...'
+					    : error
+						    ? `Erro: ${error.message}`
+						    : 'Erro: Usuário inválido'}
+			    </h1>
+		    </div>
+        )
+    }
+
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-semibold mb-4 text-center md:text-left">Histórico de Pedidos</h2>
@@ -71,7 +72,7 @@ export function OrdersPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockOrders.map((order) => (
+                        {orders.map((order) => (
                             <TableRow key={order.id}>
                                 <TableCell className="font-medium text-center">{order.id}</TableCell>
                                 <TableCell className="text-center">R$ {order.value.toFixed(2)}</TableCell>
@@ -89,7 +90,7 @@ export function OrdersPage() {
                     </TableBody>
                 </Table>
             </div>
-            {mockOrders.length === 0 && (
+            {orders.length === 0 && (
                 <p className="text-center text-muted-foreground py-10">
                     Você ainda não fez nenhum pedido.
                 </p>
