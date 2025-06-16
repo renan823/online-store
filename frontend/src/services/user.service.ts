@@ -92,7 +92,9 @@ export function useUpdatePaymentInfo() {
 Função para buscar informações de pagamento por id de usuário e seu hook
 */
 
-async function fetchPaymentInfoById(id: string): Promise<PaymentInfo | undefined> {
+async function fetchPaymentInfoById(id: string | null): Promise<PaymentInfo | undefined> {
+    if(id == null) return
+
     const response = await api.get<PaymentInfo>(`/user/payment-info/${id}`);
     if (response.status !== 200) {
         throw new Error("Failed to fetch user!");
@@ -101,9 +103,9 @@ async function fetchPaymentInfoById(id: string): Promise<PaymentInfo | undefined
     return response.data;
 }
 
-export function useFetchPaymentInfoById(id: string, options?: UseQueryOptions) {
+export function useFetchPaymentInfoById(id: string | null, options?: UseQueryOptions) {
     return useQuery({
-        queryKey: ["payment", id],
+        queryKey: ["payment"],
         queryFn: () => fetchPaymentInfoById(id),
         enabled: options?.enabled,
         ...options

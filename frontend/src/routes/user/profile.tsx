@@ -57,7 +57,7 @@ function RouteComponent() {
             setValue1("address", user.address);
             setValue1("phone", user.phone);
         }
-    }, [user]);
+    }, [user, setValue1]);
 
     //Navigation sections
     const navigationMenu: NavItem[] = [
@@ -94,19 +94,10 @@ function RouteComponent() {
         logout();
         navigate({ to: '/', replace: true });
     };
-
-    if (!user) {
-        return (
-            <div className="flex justify-center items-center min-h-[calc(100vh-var(--header-height,80px))]">
-                Faça login para acessar seu perfil.
-            </div>
-        );
-    }
-
     // Fetches payment info belonging to the logged user
     const { isLoading, error, data } = useFetchPaymentInfoById(user.id, {
-        enabled: activeSection == "pagamento",
-        queryKey: ["payment", user.id]
+        enabled: activeSection == "pagamento" && user != null,
+        queryKey: ["payment"]
     });
 
     // If the request is successful, populates the corresponding fields
@@ -116,25 +107,38 @@ function RouteComponent() {
         setValue2("cardNumber", paymentInfo.cardNumber)
     }
     
+
+    if (!user) {
+        return (
+            <div className="flex justify-center items-center min-h-[calc(100vh-var(--header-height,80px))]">
+                Faça login para acessar seu perfil.
+            </div>
+        );
+    }
+
     // If the request is not successful (or is loading), show the request current state
 	if (isLoading || error || !user) {
 		return (
-            <>
+            <div className="flex">
                 <SidebarNavigation
                     navItems={navigationMenu}
                     activeSection={activeSection}
                     onNavClick={setActiveSection}
                 />
-                <div className="flex items-center justify-center p-10">
-			        <h1 className="text-2xl text-center">
-			            {isLoading
-					        ? 'Carregando...'
-					        : error
-						        ? `Erro: ${error.message}`
-						        : 'Erro: Usuário inválido'}
-			        </h1>
-		        </div>
-            </>
+                <main className="flex-1 flex-col p-6 md:p-10 overflow-y-auto">
+                    <div className="mx-auto w-full max-w-2xl"> 
+                        <div>
+			                <h1 className="text-2xl text-center">
+			                    {isLoading
+					                ? 'Carregando...'
+					                : error
+						                ? `Erro: ${error.message}`
+						                : 'Erro: Usuário inválido'}
+			                </h1>
+		                </div>
+                    </div>
+                </main>
+            </div>
         )
     }
 
