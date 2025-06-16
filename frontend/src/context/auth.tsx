@@ -22,6 +22,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 id: "q4234234",
                 name: "Joãozinho",
                 email: credentials.email,
+                address: "Rua Jacinto Favoretto",
+                phone: "11 645879921",
                 role: "admin"
             })
         } else {
@@ -29,7 +31,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 id: "q4234234",
                 name: "Joãozinho",
                 email: credentials.email,
-                role: "user"
+                address: "Rua Jacinto Favoretto",
+                phone: "11 645879921",
+                role: "user",
             })
         }
     }

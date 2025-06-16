@@ -69,6 +69,7 @@ export function LoginForm({ redirect }: LoginFormProps) {
                                     name="password"
                                     control={control}
                                     placeholder="***********"
+                                    value=""
                                 />
                                 <ControlledFieldError error={errors.password} />
                             </div>

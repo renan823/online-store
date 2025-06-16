@@ -6,6 +6,13 @@ import { useAuth } from '@/context/auth'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react';
 import { OrdersPage } from '@/components/features/user/ordersPage'; 
+import { useFetchPaymentInfoById, useUpdatePaymentInfo, useUpdatePersonalInfo } from '@/services/user.service';
+import { PaymentInfo, UpdatePaymentInfoDTO, UpdatePaymentInfoSchema, UpdatePersonalInfoDTO, UpdatePersonalInfoSchema } from '@/lib/types/user';
+import z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import ControlledFieldError, { ControlledTextInput } from '@/components/ui/controlled-form';
+
 export const Route = createFileRoute('/user/profile')({
 	beforeLoad: ({ context, location }) => {
 		if (context.auth.user === null) {
@@ -21,32 +28,38 @@ export const Route = createFileRoute('/user/profile')({
 })
 
 
+type UpdatePersonalInfoFormData = z.infer<typeof UpdatePersonalInfoSchema>;
+type UpdatePaymentInfoFormData = z.infer<typeof UpdatePaymentInfoSchema>;
+
 function RouteComponent() {
     const { user, logout } = useAuth();
+    const updatePersonalInfo = useUpdatePersonalInfo()
+    const updatePaymentInfo = useUpdatePaymentInfo()
     const navigate = useNavigate();
 
-    // State for Informacao Pessoal
-    const [name, setName] = useState(user?.name || "");
-    const [email, setEmail] = useState(user?.email || "");
-    const [phone, setPhone] = useState("");
-    const [address, setAddress] = useState("");
+    // Initialize react-hook-form with zod schema resolver for personal info form
+    const { control: control1, handleSubmit: handleSubmit1, setValue: setValue1, formState: { errors: errors1 } } = useForm<UpdatePersonalInfoFormData>({
+        resolver: zodResolver(UpdatePersonalInfoSchema),
+    });
 
-    // State for Pagamento
-    const [cardHolderName, setCardHolderName] = useState("");
-    const [cardNumber, setCardNumber] = useState("");
-	const [cardCVV, setCardCVV] = useState("") 
-	const [cardVal, setCardVal] = useState("")
+    // Initialize react-hook-form with zod schema resolver for payment info form
+    const { control: control2, handleSubmit: handleSubmit2, setValue: setValue2, formState: { errors: errors2 } } = useForm<UpdatePaymentInfoFormData>({
+        resolver: zodResolver(UpdatePaymentInfoSchema),
+    });
 
-
+    // State for managing the current profile section
     const [activeSection, setActiveSection] = useState("informacaoPessoal");
 
+    // When the component mounts, populate the user info fields
     useEffect(() => {
         if (user) {
-            setName(user.name);
-            setEmail(user.email);
+            setValue1("name", user.name);
+            setValue1("address", user.address);
+            setValue1("phone", user.phone);
         }
     }, [user]);
 
+    //Navigation sections
     const navigationMenu: NavItem[] = [
         { id: "informacaoPessoal", label: "Informação pessoal" },
         { id: "pedidos", label: "Pedidos" },
@@ -54,31 +67,27 @@ function RouteComponent() {
         { id: "logout", label: "Logout" },
     ];
 
-    // Handlers for Informacao Pessoal
-    const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value);
-    const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
-    const handleChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value);
-    const handleChangeAddress = (e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value);
+    // Submit handler for personal info section
+    const onSubmitPersonalInfo = (data: UpdatePersonalInfoFormData) => {
+        if(!user) return;
 
-    const handleSubmitInfo = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log("Dados pessoais a serem salvos:", { name, email, phone, address });
-        // Lógica para salvar dados pessoais
+        const payload: UpdatePersonalInfoDTO = {
+            name: data.name,
+            phone: data.phone,
+            address: data.address,
+        }
+        updatePersonalInfo.mutate({id: user.id, user: payload});
     };
 
-    // Handlers for Pagamento
-    const handleChangeCardHolderName = (e: React.ChangeEvent<HTMLInputElement>) => setCardHolderName(e.target.value);
-    const handleChangeCardNumber = (e: React.ChangeEvent<HTMLInputElement>) => setCardNumber(e.target.value);
-	const handleChangeCardCVV = (e: React.ChangeEvent<HTMLInputElement>) => setCardCVV(e.target.value);
-	const handleChangeCardVal = (e: React.ChangeEvent<HTMLInputElement>) => setCardVal(e.target.value);
+    // Submit handler for payment info section
+    const onPaymentInfoSubmit = (data: UpdatePaymentInfoFormData) => {
+        if(!user) return;
 
-
-
-    const handleSavePayment = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log("Dados de pagamento a serem salvos:", { cardHolderName, cardNumber });
-        setCardHolderName(""); 
-        setCardNumber("");
+        const payload: UpdatePaymentInfoDTO = {
+            cardHolderName: data.cardHolderName,
+            cardNumber: data.cardNumber
+        }
+        updatePaymentInfo.mutate({id: user.id, payment: payload});
     };
 
     const handleLogout = () => {
@@ -93,6 +102,42 @@ function RouteComponent() {
             </div>
         );
     }
+
+    // Fetches payment info belonging to the logged user
+    const { isLoading, error, data } = useFetchPaymentInfoById(user.id, {
+        enabled: activeSection == "pagamento",
+        queryKey: ["payment", user.id]
+    });
+
+    // If the request is successful, populates the corresponding fields
+    const paymentInfo = data as PaymentInfo
+    if(paymentInfo){
+        setValue2("cardHolderName", paymentInfo.cardHolderName)
+        setValue2("cardNumber", paymentInfo.cardNumber)
+    }
+    
+    // If the request is not successful (or is loading), show the request current state
+	if (isLoading || error || !user) {
+		return (
+            <>
+                <SidebarNavigation
+                    navItems={navigationMenu}
+                    activeSection={activeSection}
+                    onNavClick={setActiveSection}
+                />
+                <div className="flex items-center justify-center p-10">
+			        <h1 className="text-2xl text-center">
+			            {isLoading
+					        ? 'Carregando...'
+					        : error
+						        ? `Erro: ${error.message}`
+						        : 'Erro: Usuário inválido'}
+			        </h1>
+		        </div>
+            </>
+        )
+    }
+
 
     return (
         <div className="flex min-h-[calc(100vh-var(--header-height,80px))] bg-background text-foreground">
@@ -110,28 +155,28 @@ function RouteComponent() {
                             <div className="mx-auto mb-8 h-24 w-24 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
                                 <span className="text-3xl font-semibold">{user.name?.charAt(0).toUpperCase()}</span>
                             </div>
-                            <form className="space-y-6" onSubmit={handleSubmitInfo}>
+                            <form className="space-y-6" onSubmit={handleSubmit1(onSubmitPersonalInfo)}>
                                 <h2 className="text-2xl font-semibold mb-6 text-center md:text-left">Informações Pessoais</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                                     <div className="space-y-1.5">
                                         <Label htmlFor='name' className="text-sm font-medium">Nome</Label>
-                                        <Input
-                                            id="name"
-                                            type="text"
+                                        <ControlledTextInput
+                                            name="name"
                                             placeholder="Joãozinho"
-                                            value={name}
-                                            onChange={handleChangeName}
+                                            value={user.name}
+                                            control={control1}
                                         />
+                                        <ControlledFieldError error={errors1.name} />
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label htmlFor='phone' className="text-sm font-medium">Telefone</Label>
-                                        <Input
-                                            id="phone"
-                                            type="text"
+                                        <ControlledTextInput
+                                            name="phone"
                                             placeholder="(XX) XXXXX-XXXX"
-                                            value={phone}
-                                            onChange={handleChangePhone}
+                                            value={user.phone}
+                                            control={control1}
                                         />
+                                        <ControlledFieldError error={errors1.phone} />
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
@@ -140,20 +185,19 @@ function RouteComponent() {
                                         id="email"
                                         type="email"
                                         placeholder="email@exemplo.com"
-                                        value={email}
-                                        onChange={handleChangeEmail}
+                                        value={user.email}
                                         disabled
                                     />
                                 </div>
                                 <div className="space-y-1.5">
                                     <Label htmlFor='address' className="text-sm font-medium">Endereço</Label>
-                                    <Input
-                                        id="address"
-                                        type="text"
+                                    <ControlledTextInput
+                                        name="address"
                                         placeholder=" Avenida Trabalhador são-carlense, 400 - Parque Arnold Schimidt."
-                                        value={address}
-                                        onChange={handleChangeAddress}
+                                        value={user.address}
+                                        control={control1}
                                     />
+                                    <ControlledFieldError error={errors1.address} />
                                 </div>
                                 <div className="flex justify-center md:justify-end pt-4">
                                     <Button type="submit" size="lg">
@@ -165,44 +209,40 @@ function RouteComponent() {
                     )}
 
                     {activeSection === "pedidos" && (
-                        <OrdersPage />
+                        <OrdersPage id={user.id} />
                     )}
 
                     {activeSection === "pagamento" && (
                         <div className="p-4 md:p-6 bg-card rounded-lg shadow-md">
                             <h2 className="text-2xl font-semibold mb-8 text-center">Pagamento</h2>
-                            <form className="space-y-6 max-w-md mx-auto" onSubmit={handleSavePayment}>
+                            <form className="space-y-6 max-w-md mx-auto" onSubmit={handleSubmit2(onPaymentInfoSubmit)}>
                                 <div className="space-y-1.5">
                                     <Label htmlFor='cardHolderName' className="text-sm font-medium">Nome do titular</Label>
-                                    <Input
-                                        id="cardHolderName"
-                                        type="text"
+                                    <ControlledTextInput
+                                        name="cardHolderName"
+                                        value=""
                                         placeholder="Nome no cartão"
-                                        value={cardHolderName}
-                                        onChange={handleChangeCardHolderName}
-                                        className="bg-input placeholder:text-muted-foreground" 
+                                        control={control2}
                                     />
+                                    <ControlledFieldError error={errors2.cardHolderName} />
                                 </div>
                                 <div className="space-y-1.5">
                                     <Label htmlFor='cardNumber' className="text-sm font-medium">Número do cartão</Label>
-                                    <Input
-                                        id="cardNumber"
-                                        type="text"
+                                    <ControlledTextInput
+                                        name="cardNumber"
+                                        value=""
                                         placeholder="XXXX XXXX XXXX XXXX"
-                                        value={cardNumber}
-                                        onChange={handleChangeCardNumber}
-                                        className="bg-input placeholder:text-muted-foreground"
+                                        control={control2}
                                     />
+                                    <ControlledFieldError error={errors2.cardNumber} />
                                 </div>
 								<div className="space-y-1.5">
                                     <Label htmlFor='cardCVV' className="text-sm font-medium">CVV</Label>
                                     <Input
                                         id="cardCVV"
+                                        value=""
                                         type="text"
                                         placeholder="XXX"
-                                        value={cardCVV}
-                                        onChange={handleChangeCardCVV}
-                                        className="bg-input placeholder:text-muted-foreground" 
                                     />
                                 </div>
 
@@ -212,9 +252,7 @@ function RouteComponent() {
                                         id="cardVal"
                                         type="text"
                                         placeholder="DD/MM/AAAA"
-                                        value={cardVal}
-                                        onChange={handleChangeCardVal}
-                                        className="bg-input placeholder:text-muted-foreground" 
+                                        value=""
                                     />
                                 </div>
                                 <div className="flex justify-center pt-4">
