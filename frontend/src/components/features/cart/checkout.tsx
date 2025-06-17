@@ -9,32 +9,44 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CreditCard } from 'lucide-react'
+import { CreditCard, Loader2 } from 'lucide-react'
 import { useState } from 'react'
-import { notify } from '@/lib/notify'
 import { useCart } from '@/context/cart'
+import { useAuth } from '@/context/auth'
+import { useCreateOrder } from '@/services/order.service'
 
 export function CheckoutModal() {
     const [cardNumber, setCardNumber] = useState('');
     const [name, setName] = useState('');
     const [cvv, setCvv] = useState('');
     const [expiration, setExpiration] = useState('');
-
     const [open, setOpen] = useState(false);
 
-    const { clear } = useCart();
+    const { items, clear } = useCart();
+    const { user } = useAuth();
+    const createOrder = useCreateOrder();
 
-    const handleSubmit = () => {
-        notify.success("Compra realizada com sucesso.");
+    const handleSubmit = async () => {
+        if (!user) return;
 
-        setCardNumber('');
-        setName('');
-        setCvv('');
-        setExpiration('');
+        const orderData = {
+            userId: user.id,
+            cardId: 'dummy-card-id', // O backend espera um cardId
+            items: items.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity,
+            })),
+        };
 
-        clear();
-        setOpen(false);
+        await createOrder.mutateAsync(orderData, {
+            onSuccess: () => {
+                clear(); // Limpa o carrinho
+                setOpen(false); // Fecha o modal
+            }
+        });
     }
+
+    const isFormInvalid = !cardNumber || !name || !cvv || !expiration || items.length === 0;
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -91,8 +103,15 @@ export function CheckoutModal() {
                 </div>
 
                 <DialogFooter>
-                    <Button onClick={handleSubmit} disabled={!cardNumber || !name || !cvv || !expiration}>
-                        Finalizar Compra
+                    <Button onClick={handleSubmit} disabled={isFormInvalid || createOrder.isPending}>
+                        {createOrder.isPending ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Finalizando...
+                            </>
+                        ) : (
+                            "Finalizar Compra"
+                        )}
                     </Button>
                 </DialogFooter>
             </DialogContent>
