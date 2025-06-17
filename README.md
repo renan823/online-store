@@ -1,5 +1,5 @@
 # Loja de eletrônicos
-Alunos: Caio Capocasali da Silva - 12541733 e Renan Trofino Silva - 15522316
+Alunos: Caio Capocasali da Silva - 12541733, Felipe Ferreira Colona - 15636525 e Renan Trofino Silva - 15522316
 
 ## Requisitos do sistema
 O sistema de loja de produtos eletrônicos possui 3 entidades principais: usuários, produtos e compras. </br>
@@ -44,14 +44,9 @@ Um admin pode: </br>
 Um cliente pode: </br>
 - Buscar produtos
 - Adicionar/excluir produtos em seu carrinho de compras
-- Gerenciar (criar, atualizar, excluir e buscar) seus cartões
 - Comprar os items em seu carrinho
 - Ver compras já realizadas
 - Editar seus próprios dados (alterar senha, ect)
-
-### Casos de uso - Cartões do usuário
-- O usuário pode gerenciar seus cartões
-- Para realizar compras, pelo menos um cartão deve estar cadastrado
 
 ### Casos de uso - Produto
 - Produtos são criados por administradores
@@ -74,6 +69,11 @@ Um cliente pode: </br>
 ### Casos de uso - Dashboard
 - Um admin pode buscar dados de compras na base de dados
 - Resultados são exibidos via gráfico ou arquivo para download
+  
+## Estrutura do projeto
+Para melhor organização, o projeto possui 3 sistemas separados: cliente, servidor e cdn.</br></br>
+A cdn apenas recebe requisições relacionadas à criação, leitura ou remoção de imagens, salvando-as localmente. </br>
+O uso da cdn possibilita servir diretamente conteúdo estático via url (ex: `http://localhost:5000/minha_imagem.jpeg`), evitando uma sobrecarga nos payloads que poderiam conter imagens.</br>
 
 ## Comentários sobre o código
 
@@ -84,8 +84,27 @@ Para executar teste do backend, plataformas como Postman e Insomnia podem ser ú
 
 ## Instalação e execução
 Clone este reposiório. </br>
+É necessário ter Docker (lembre-se de ativá-lo) e Bun (runtime JS) instalados. </br>
+<br/>
+Banco de dados (Mongo DB):</br>
+```
+docker compose up -d
+```
+<br/>
+CDN (rodando em localhost:5000):</br>
+
+```
+cd cdn/
+```
+```
+bun install
+```
+```
+bun run dev
+```
 <br/>
 Backend (rodando em localhost:3000):</br>
+
 ```
 cd backend/
 ```
