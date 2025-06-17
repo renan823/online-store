@@ -1,61 +1,42 @@
-// frontend/src/components/features/user/orders-page.tsx
 import { Badge } from "@/components/features/user/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Order, OrderStatus } from "@/lib/types/user";
-import { useFetchOrdersById } from "@/services/user.service";
-import { useState } from "react";
+import { ErrorMessage, LoadingMessage, EmptyMessage } from "@/components/ui/messages";
+import { useFetchUserOrders } from "@/services/order.service";
+import { Order } from "@/lib/types/order";
 
-function getStatusBadgeVariant(status: OrderStatus): "default" | "destructive" | "secondary" | "outline" {
-    switch (status) {
-        case "Entregue":
-            return "default"; // Will be styled green
-        case "Cancelado":
-            return "destructive"; // Will be styled red
-        case "Transporte":
-            return "secondary"; // Will be styled yellow/orange
-        case "Pendente":
-            return "outline"; // Will be styled with a border
-        default:
-            return "outline";
+// Mapeamento de status para estilos de badge
+const statusStyles: Record<Order['status'], string> = {
+    pending: "bg-yellow-500 hover:bg-yellow-600 text-black",
+    paid: "bg-blue-500 hover:bg-blue-600 text-white",
+    shipped: "bg-green-500 hover:bg-green-600 text-white",
+    cancelled: "bg-red-600 hover:bg-red-700 text-white",
+};
+
+const statusTranslations: Record<Order['status'], string> = {
+    pending: "Pendente",
+    paid: "Pago",
+    shipped: "Enviado",
+    cancelled: "Cancelado",
+};
+
+interface OrdersPageProps {
+    userId: string;
+}
+
+export function OrdersPage({ userId }: OrdersPageProps) {
+    const { data: pagination, isLoading, error } = useFetchUserOrders(userId);
+    const orders = pagination?.items;
+
+    if (isLoading) {
+        return <LoadingMessage message="Carregando histórico de compras..." />;
     }
-}
 
-function getStatusBadgeColors(status: OrderStatus): string {
-    switch (status) {
-        case "Entregue":
-            return "bg-green-500 hover:bg-green-600 text-white";
-        case "Cancelado":
-            return "bg-red-600 hover:bg-red-700 text-white"; // destructive variant handles this
-        case "Transporte":
-            return "bg-yellow-500 hover:bg-yellow-600 text-black";
-        case "Pendente":
-            return "border-gray-500 text-gray-700"; // outline variant handles this
-        default:
-            return "";
+    if (error) {
+        return <ErrorMessage message={`Erro ao carregar pedidos: ${error.message}`} />;
     }
-}
 
-
-type UserId  = {
-    id: string
-}
-export function OrdersPage({ id }: UserId) {
-    const [orders, setOrders] = useState<Order[]>([])
-    const { isLoading, error, data } = useFetchOrdersById(id)
-    if(data) setOrders(data)
-
-	if (isLoading || error || !orders) {
-		return (
-            <div className="flex items-center justify-center p-10">
-			    <h1 className="text-2xl text-center">
-				    {isLoading
-					    ? 'Carregando...'
-					    : error
-						    ? `Erro: ${error.message}`
-						    : 'Erro: Usuário inválido'}
-			    </h1>
-		    </div>
-        )
+    if (!orders || orders.length === 0) {
+        return <EmptyMessage message="Você ainda não fez nenhum pedido." />;
     }
 
     return (
@@ -65,24 +46,27 @@ export function OrdersPage({ id }: UserId) {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[100px] text-center">Pedido</TableHead>
-                            <TableHead className="w-[150px] text-center">Valor</TableHead>
-                            <TableHead>Produto</TableHead>
-                            <TableHead className="w-[150px] text-center">Status</TableHead>
+                            <TableHead className="w-[150px]">Data</TableHead>
+                            <TableHead>Itens</TableHead>
+                            <TableHead className="text-center w-[120px]">Total</TableHead>
+                            <TableHead className="text-center w-[120px]">Status</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {orders.map((order) => (
                             <TableRow key={order.id}>
-                                <TableCell className="font-medium text-center">{order.id}</TableCell>
-                                <TableCell className="text-center">R$ {order.value.toFixed(2)}</TableCell>
-                                <TableCell className="max-w-xs truncate">{order.productDetails}</TableCell>
+                                <TableCell>
+                                    {new Date(order.createdAt).toLocaleDateString('pt-BR')}
+                                </TableCell>
+                                <TableCell className="max-w-xs truncate">
+                                    {order.items.map(item => `${item.quantity}x ${item.productId}`).join(', ')}
+                                </TableCell>
+                                <TableCell className="font-medium text-center">
+                                    R$ {order.total.toFixed(2)}
+                                </TableCell>
                                 <TableCell className="text-center">
-                                    <Badge
-                                        variant={getStatusBadgeVariant(order.status as OrderStatus)}
-                                        className={cn("text-xs px-2 py-0.5", getStatusBadgeColors(order.status as OrderStatus))}
-                                    >
-                                        {order.status}
+                                    <Badge className={statusStyles[order.status]}>
+                                        {statusTranslations[order.status]}
                                     </Badge>
                                 </TableCell>
                             </TableRow>
@@ -90,18 +74,6 @@ export function OrdersPage({ id }: UserId) {
                     </TableBody>
                 </Table>
             </div>
-            {orders.length === 0 && (
-                <p className="text-center text-muted-foreground py-10">
-                    Você ainda não fez nenhum pedido.
-                </p>
-            )}
         </div>
     );
-}
-
-// Helper function to combine class names, needed if not already present
-// If you have a `cn` utility (like in shadcn/ui), you can use that.
-// Otherwise, a simple version:
-function cn(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
 }
