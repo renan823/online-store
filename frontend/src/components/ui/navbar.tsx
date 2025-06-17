@@ -18,7 +18,7 @@ export function Navbar() {
 
     return (
         <nav className="w-full px-6 py-4 flex items-center justify-between bg-rose-700/80 backdrop-blur-md text-white shadow-md rounded-b-2xl">
-            <Link to="/" className="text-xl font-bold tracking-tight">CR Tech</Link>
+            <Link to="/" className="text-xl font-bold tracking-tight">CFR Tech</Link>
 
             {/* Links para desktop */}
             <div className="hidden md:flex gap-8 items-center">
