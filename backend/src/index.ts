@@ -7,6 +7,9 @@ import { logger } from 'hono/logger'
 import mongoose from 'mongoose';
 import analyticsRouter from './handlers/analitycs.handler';
 import ordersRouter from './handlers/order.handler'; 
+import userRouter from './handlers/users.handler';
+import profileRouter from './handlers/profile.handler';
+
 const app = new Hono();
 
 // Iniciar mongoose
@@ -28,6 +31,9 @@ app.use(logger());
 app.route('/', productsRouter);
 app.route('/', analyticsRouter);
 app.route('/', ordersRouter); 
+app.route('/', userRouter);
+app.route('/', profileRouter);
+
 // app.get('/users/');
 // app.get('/users/:id');
 // app.post('/users/new');
