@@ -51,7 +51,7 @@ profileRouter.put('/', zValidator("json", UpdatePersonalSchema), async (c) => {
 });
 
 // Fetch payment information
-profileRouter.get('/payments/:id', async (c) => {
+profileRouter.get('/payment/:id', async (c) => {
     const userId = c.req.param('id');
     const paymentInfo = await findPaymentByUserIdUseCase(userId);
 
@@ -63,7 +63,7 @@ profileRouter.get('/payments/:id', async (c) => {
 })
 
 // Update payment information
-profileRouter.put('/payments', zValidator("json", UpdatePaymentSchema), async (c) => {
+profileRouter.put('/payment', zValidator("json", UpdatePaymentSchema), async (c) => {
     const data = c.req.valid("json");
 
     const updated = await updatePaymentUseCase(data);

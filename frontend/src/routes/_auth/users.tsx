@@ -34,9 +34,12 @@ function UsersListPage() {
     const { user } = useAuth(); 
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
+    //When a update/deletion happens this variable changes (doesn't matter the value)
+    //and the new data is fetched
+    const [remakeReq, setRemakeReq] = useState(false)
 
     //Fetch users
-	const { isLoading, error, data: users } = useFetchUsers();
+	const { isLoading, error, data: users} = useFetchUsers(remakeReq);
 
     if (user?.role !== "admin") {
         return (
@@ -93,7 +96,7 @@ function UsersListPage() {
                             <Search className="h-5 w-5" />
                         </Button>
                     </div>
-                    <NewUserModal/>
+                    <NewUserModal remake={remakeReq} setRemake={setRemakeReq}/>
                 </div>
 
                 <div className="border rounded-lg overflow-hidden">
@@ -117,8 +120,8 @@ function UsersListPage() {
                                     <TableCell className="hidden md:table-cell">{u.phone}</TableCell>
                                     <TableCell className="text-center">{u.role.toUpperCase()}</TableCell>
                                     <TableCell className="text-center space-x-2">
-                                        <UpdateUserModal id={u.id}/>
-                                        <DeleteUserModal id={u.id}/>
+                                        <UpdateUserModal id={u.id} remake={remakeReq} setRemake={setRemakeReq}/>
+                                        <DeleteUserModal id={u.id} remake={remakeReq} setRemake={setRemakeReq}/>
                                     </TableCell>
                                 </TableRow>
                             ))}

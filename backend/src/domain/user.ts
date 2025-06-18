@@ -27,7 +27,6 @@ export type UpdateUserDTO = {
     address: string;
     phone: string;
     email: string;
-    password: string;
     isAdmin: boolean;
 }
 
@@ -46,6 +45,5 @@ export const UpdateUserSchema = z.object({
     address: z.string(),
     phone: z.string(),
     email: z.string(),
-    password: z.string(),
     isAdmin: z.boolean(),
 });
