@@ -17,7 +17,12 @@ import { PlusCircle } from "lucide-react";
 
 type CreateUserFormData = z.infer<typeof CreateUserSchema>;
 
-export function NewUserModal() {
+type Props  = {
+    remake: boolean,
+    setRemake: Function,
+}
+
+export function NewUserModal({ remake, setRemake } : Props) {
     // State to control whether the dialog is open or not
     const [open, setOpen] = useState(false);
 
@@ -41,6 +46,7 @@ export function NewUserModal() {
 
         // Call the create user mutation, then close modal and reset form on success
         createUser.mutate(payload, {onSuccess: () => {
+            setRemake(!remake)
             setOpen(false);
             reset();
         }});

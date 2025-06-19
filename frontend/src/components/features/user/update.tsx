@@ -16,11 +16,13 @@ import { Edit } from "lucide-react";
 
 type UpdateUserFormData = z.infer<typeof UpdateUserSchema>;
 
-type UserId  = {
-    id: string
+type Props  = {
+    id: string,
+    remake: boolean,
+    setRemake: Function,
 }
 
-export function UpdateUserModal({ id }: UserId) {
+export function UpdateUserModal({ id, remake, setRemake }: Props) {
     // State to control whether the dialog is open or not
     const [open, setOpen] = useState(false);
     //Fetch current user data only when the modal is opened
@@ -59,6 +61,7 @@ export function UpdateUserModal({ id }: UserId) {
 
         // Call the update user mutation, then close modal and reset form on success
         updateUser.mutate({id, user: payload}, {onSuccess: () => {
+            setRemake(!remake)
             setOpen(false);
             reset();
         }});

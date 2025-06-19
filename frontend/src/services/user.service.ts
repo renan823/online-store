@@ -7,7 +7,7 @@ import { notify } from "@/lib/notify";
 Função para registrar um usuário e seu hook
 */
 export async function registerUser(user: RegisterUserDTO): Promise<boolean> {
-    const response = await api.post<boolean>("/users/register", user);
+    const response = await api.post<boolean>("/profiles", user);
     if (response.status !== 201) {
         throw new Error("Failed to register user");
     }
@@ -35,7 +35,7 @@ export function useRegisterUser() {
 Função para atualizar um usuário e seu hook
 */
 export async function updatePersonalInfo(id: string, user: UpdatePersonalInfoDTO): Promise<boolean> {
-    const response = await api.put<boolean>(`/users/update-info/${id}`, {...user, id});
+    const response = await api.put<boolean>(`/profiles`, {...user, id});
     if (response.status !== 201) {
         throw new Error("Failed to update user information");
     }
@@ -63,7 +63,7 @@ export function useUpdatePersonalInfo() {
 Função para atualizar informações de pagamento de um usuário e seu hook
 */
 export async function updatePaymentInfo(id: string, paymentInfo: UpdatePaymentInfoDTO): Promise<boolean> {
-    const response = await api.put<boolean>(`/users/update-payment/${id}`, {...paymentInfo, id});
+    const response = await api.put<boolean>(`/profiles/payment`, {...paymentInfo, id});
     if (response.status !== 201) {
         throw new Error("Failed to update payment information");
     }
@@ -95,7 +95,7 @@ Função para buscar informações de pagamento por id de usuário e seu hook
 async function fetchPaymentInfoById(id: string | null): Promise<PaymentInfo | undefined> {
     if(id == null) return
 
-    const response = await api.get<PaymentInfo>(`/user/payment-info/${id}`);
+    const response = await api.get<PaymentInfo>(`/profiles/payment/${id}`);
     if (response.status !== 200) {
         throw new Error("Failed to fetch user!");
     }
@@ -167,8 +167,8 @@ export function useDeleteUser() {
 Função para atualizar um usuário e seu hook
 */
 export async function updateUser(id: string, user: UpdateUserDTO): Promise<boolean> {
-    const response = await api.put<boolean>(`/users/update/${id}`, {...user, id});
-    if (response.status !== 201) {
+    const response = await api.put<boolean>("/users", {...user, id});
+    if (response.status !== 200) {
         throw new Error("Failed to update user");
     }
 
@@ -183,7 +183,7 @@ export function useUpdateUser() {
         mutationFn: ({ id, user }: { id: string, user: UpdateUserDTO }) => updateUser(id, user),
         onSuccess: () => {
             notify.success("Usuário atualizado com sucesso.");
-            client.invalidateQueries({ queryKey: ["user"] });
+            client.invalidateQueries({ queryKey: ["update", "user"] });
         },
         onError: () => {
             notify.error("Falha ao atualizar usuário.")
@@ -195,7 +195,7 @@ export function useUpdateUser() {
 Função para buscar um usuário por id e seu hook
 */
 async function fetchUserById(id: string): Promise<User | undefined> {
-    const response = await api.get<User>(`/user/${id}`);
+    const response = await api.get<User>(`/users/${id}`);
     if (response.status !== 200) {
         throw new Error("Failed to fetch user!");
     }
@@ -216,7 +216,7 @@ export function useFetchUserById(id: string, options?: UseQueryOptions) {
 Função para buscar usuários com filtro e seu hook
 */
 async function fetchUsers(): Promise<User[]> {
-    const response = await api.get<User[]>(`/users`);
+    const response = await api.get<User[]>("/users?search=");
     if (response.status !== 200) {
         throw new Error("Failed to fetch users!");
     }
@@ -224,9 +224,9 @@ async function fetchUsers(): Promise<User[]> {
     return response.data;
 }
 
-export function useFetchUsers() {
+export function useFetchUsers(dependency: boolean) {
     return useQuery({
-        queryKey: ["users"],
+        queryKey: ["users", dependency],
         queryFn: () => fetchUsers()
     })
 }
