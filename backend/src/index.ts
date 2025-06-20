@@ -63,15 +63,15 @@ app.get("/orders/*", bearerAuth({
 }))
 
 app.post("/orders/*", bearerAuth({
-	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+	verifyToken: async (token, c) => token === getCookie(c, "token")
 }))
 
 app.put("/orders/*", bearerAuth({
-	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+	verifyToken: async (token, c) => token === getCookie(c, "token")
 }))
 
 app.delete("/orders/*", bearerAuth({
-	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+	verifyToken: async (token, c) => token === getCookie(c, "token")
 }))
 
 app.route('/', authRouter)
