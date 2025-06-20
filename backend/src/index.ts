@@ -1,14 +1,19 @@
 import { Hono } from 'hono'
-import productsRouter from './handlers/products.handler'
 
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger'
 
 import mongoose from 'mongoose';
+import { checkForAdmin } from './usecases/auth/login';
+import { getCookie } from "hono/cookie"
+import { bearerAuth } from 'hono/bearer-auth'
+
+import authRouter from './handlers/auth.handler';
 import analyticsRouter from './handlers/analitycs.handler';
 import ordersRouter from './handlers/order.handler'; 
 import userRouter from './handlers/users.handler';
 import profileRouter from './handlers/profile.handler';
+import productsRouter from './handlers/products.handler'
 
 const app = new Hono();
 
@@ -28,6 +33,47 @@ app.use(
 
 app.use(logger());
 
+app.use("/users/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+}))
+
+app.post("/products/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+}))
+
+app.delete("/products/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+}))
+
+app.put("/products/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+}))
+
+app.use("/analytics/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+}))
+
+app.use("/profiles/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token")
+}))
+
+app.get("/orders/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token")
+}))
+
+app.post("/orders/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+}))
+
+app.put("/orders/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+}))
+
+app.delete("/orders/*", bearerAuth({
+	verifyToken: async (token, c) => token === getCookie(c, "token") && checkForAdmin(getCookie(c, "id"))
+}))
+
+app.route('/', authRouter)
 app.route('/', productsRouter);
 app.route('/', analyticsRouter);
 app.route('/', ordersRouter); 
