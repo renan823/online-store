@@ -11,9 +11,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { CreditCard, Loader2 } from 'lucide-react'
 import { useState } from 'react'
-import { useCart } from '@/context/cart'
 import { useAuth } from '@/context/auth'
 import { useCreateOrder } from '@/services/order.service'
+import { useCart, clear } from '@/context/cart';
 
 export function CheckoutModal() {
     const [cardNumber, setCardNumber] = useState('');
@@ -22,7 +22,7 @@ export function CheckoutModal() {
     const [expiration, setExpiration] = useState('');
     const [open, setOpen] = useState(false);
 
-    const { items, clear } = useCart();
+    const { cart, clear } = useCart(); 
     const { user } = useAuth();
     const createOrder = useCreateOrder();
 
@@ -32,8 +32,8 @@ export function CheckoutModal() {
         const orderData = {
             userId: user.id,
             cardId: 'dummy-card-id', // O backend espera um cardId
-            items: items.map(item => ({
-                productId: item.productId,
+            items: cart.items.map(item => ({
+                productId: item.product.id,
                 quantity: item.quantity,
             })),
         };
@@ -46,8 +46,7 @@ export function CheckoutModal() {
         });
     }
 
-    const isFormInvalid = !cardNumber || !name || !cvv || !expiration || items.length === 0;
-
+    const isFormInvalid = !cardNumber || !name || !cvv || !expiration || (cart?.items || []).length === 0; 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>

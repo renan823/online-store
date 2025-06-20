@@ -1,9 +1,13 @@
-import { CartItem } from "@/lib/types/cart";
-import { createContext, useContext, useEffect, useState } from "react";
+import { Cart, CartItem } from "@/lib/types/cart";
+import { useClearCart, useFetchCart, useUpdateCartItem } from "@/services/cart.service";
+import { createContext, useContext } from "react";
+import { useAuth } from "./auth";
+import { notify } from "@/lib/notify";
 
 export interface CartContextType {
-    items: CartItem[];
-    add: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
+    cart: Cart | undefined;
+    isLoading: boolean;
+    add: (item: Omit<CartItem['product'], "quantity">, quantity?: number) => void;
     remove: (productId: string) => void;
     update: (productId: string, quantity: number) => void;
     clear: () => void;
@@ -14,63 +18,62 @@ export interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const STORAGE_KEY = "cart-items";
-
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [items, setItems] = useState<CartItem[]>(() => {
-		try {
-			const stored = localStorage.getItem(STORAGE_KEY);
-			return stored ? JSON.parse(stored) : [];
-		} catch {
-			return [];
-		}
-	});
+    const { user } = useAuth();
+    const { data: cart, isLoading } = useFetchCart(user?.id);
 
-    useEffect(() => {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-	}, [items]);
+    const updateItemMutation = useUpdateCartItem();
+    const clearCartMutation = useClearCart();
 
-    function add(item: Omit<CartItem, "quantity">, quantity = 1) {
-        setItems(prev => {
-            const existing = prev.find(p => p.productId === item.productId);
-            if (existing) {
-                return prev.map(p =>
-                    p.productId === item.productId
-                        ? { ...p, quantity: p.quantity + quantity }
-                        : p
-                );
-            }
-            return [...prev, { ...item, quantity }];
+    function add(product: Omit<CartItem['product'], "quantity">, quantity = 1) {
+        if (!user) {
+            notify.error("Você precisa estar logado para adicionar itens ao carrinho.");
+            return;
+        }
+
+        const existingItem = cart?.items.find(i => i.product.id === product.id);
+        const newQuantity = (existingItem ? existingItem.quantity : 0) + quantity;
+
+        updateItemMutation.mutate({
+            userId: user.id,
+            productId: product.id,
+            quantity: newQuantity,
         });
     };
 
     function remove(productId: string) {
-        setItems(prev => prev.filter(p => p.productId !== productId));
+        if (!user) return;
+        updateItemMutation.mutate({
+            userId: user.id,
+            productId: productId,
+            quantity: 0,
+        });
     };
 
     function update(productId: string, quantity: number) {
-        if (quantity <= 0) {
-            return remove(productId);
-        }
-    
-        setItems(prev =>
-            prev.map(p =>
-                p.productId === productId ? { ...p, quantity } : p
-            )
-        );
+        if (!user) return;
+        updateItemMutation.mutate({
+            userId: user.id,
+            productId: productId,
+            quantity: quantity,
+        });
     };
 
+    // A função 'clear' está definida aqui, e chama a mutação para limpar o carrinho no backend.
     function clear() {
-        setItems([]);
+        if (!user) return;
+        clearCartMutation.mutate(user.id);
     };
+
+    const items = cart?.items || [];
 
     function getTotal() {
-        return items.reduce((total, item) => total + item.price * item.quantity, 0);
+        return items.reduce((total, item) => total + item.product.price * item.quantity, 0);
     }
 
     function getTotalWithDiscounts() {
         return items.reduce((total, item) => {
-            const priceWithDiscount = item.price - item.discount;
+            const priceWithDiscount = item.product.price * (1 - item.product.discount / 100);
             return total + priceWithDiscount * item.quantity;
         }, 0);
     };
@@ -81,7 +84,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return (
         <CartContext.Provider
-            value={{ items, add, remove, update, clear, getTotal, getTotalWithDiscounts, getTotalItems }}
+            // E a função 'clear' é exposta para os componentes filhos através do contexto.
+            value={{ cart, isLoading, add, remove, update, clear, getTotal, getTotalWithDiscounts, getTotalItems }}
         >
             {children}
         </CartContext.Provider>

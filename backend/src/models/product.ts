@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
     discount: {type: Number, required: true},
     quantitySold: {type: Number, required: true},
     images: {type: [String], required: true},
-    deleted: { type:Number, default: false }
+    deleted: { type:Boolean, default: false }
 });
 
 export const ProductModel = mongoose.model('Product', productSchema);
