@@ -21,7 +21,8 @@ export async function checkForAdmin(id: string): Promise<boolean> {
     const query: FilterQuery<User> = {
         $and: [
             { id },
-            { role: "admin" }
+            { role: "admin" },
+            { deleted: false }
         ]
     }
     const users: User[] = await UserSchema.find(query).lean();

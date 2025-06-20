@@ -7,6 +7,7 @@ import z from "zod";
 import { checkCredentials } from "../usecases/auth/login";
 import { sign } from "hono/jwt";
 import { setCookie } from "hono/cookie";
+import { findUserByIdUseCase } from "../usecases/user/find-by-id";
 
 const authRouter = new Hono().basePath('/auth');
 
@@ -29,8 +30,11 @@ authRouter.post("/login", zValidator("json", Credentials),  async (c) => {
 	const matchedUserId = await checkCredentials(email, password)
 	if(matchedUserId === null) return c.json({ error: 'Invalid credentials' }, 401);
 	
+	const user = await findUserByIdUseCase(matchedUserId)
+	if(!user) return c.json({ error: 'Invalid credentials' }, 401);
+	
 	const payload = {
-		id: matchedUserId,
+		user,
 		exp: Math.floor(Date.now() / 1000) + 60 * 60
 	}
 	const token = await sign(payload, "SECRET")

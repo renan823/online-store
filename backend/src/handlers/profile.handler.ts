@@ -57,7 +57,7 @@ profileRouter.get('/payment/:id', async (c) => {
 // Update payment information
 profileRouter.put('/payment', zValidator("json", UpdatePaymentSchema), async (c) => {
     const data = c.req.valid("json");
-    if(getCookie(c, "id") !== data.userId) return c.json({ error: 'Invalid credentials' }, 401);
+    if(getCookie(c, "id") !== data.id) return c.json({ error: 'Invalid credentials' }, 401);
 
     const updated = await updatePaymentUseCase(data);
     if (!updated) {

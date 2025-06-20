@@ -6,8 +6,12 @@ import { Pagination } from "@/lib/utils";
 
 
 //Cria uma nova compra no backend.
-async function createOrder(orderData: CreateOrderDTO): Promise<Order> {
-    const response = await api.post<Order>('/orders', orderData);
+async function createOrder(orderData: CreateOrderDTO, token: string): Promise<Order> {
+    const response = await api.post<Order>('/orders', orderData, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
     if (response.status !== 201) {
         throw new Error("Falha ao criar a compra.");
     }
@@ -22,7 +26,7 @@ export function useCreateOrder() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: createOrder,
+        mutationFn: ({ orderData, token }: { orderData: CreateOrderDTO, token: string }) => createOrder(orderData, token),
         onSuccess: () => {
             notify.success("Compra realizada com sucesso!");
             queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -37,9 +41,12 @@ export function useCreateOrder() {
 
 // Busca as compras de um usuário específico.
 
-async function fetchUserOrders(userId: string): Promise<Pagination<Order>> {
+async function fetchUserOrders(userId: string, token: string): Promise<Pagination<Order>> {
     const response = await api.get<Pagination<Order>>('/orders', {
-        params: { userId }
+        params: { userId },
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
     });
     if (response.status !== 200) {
         throw new Error("Falha ao buscar as compras.");
@@ -50,10 +57,10 @@ async function fetchUserOrders(userId: string): Promise<Pagination<Order>> {
 
 //Hook de query para buscar as compras de um usuário.
 
-export function useFetchUserOrders(userId: string) {
+export function useFetchUserOrders(userId: string, token: string) {
     return useQuery({
         queryKey: ["orders", userId],
-        queryFn: () => fetchUserOrders(userId),
+        queryFn: () => fetchUserOrders(userId, token),
         enabled: !!userId, // A query só será executada se o userId existir.
     });
 }

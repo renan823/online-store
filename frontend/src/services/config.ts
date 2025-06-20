@@ -1,4 +1,5 @@
 import axios from "axios";
+axios.defaults.withCredentials = true
 
 /*Api do backend*/
 const BACKEND_URL = 'http://localhost:3000/';

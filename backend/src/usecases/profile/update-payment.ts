@@ -4,11 +4,11 @@ import { PaymentInfo, UpdatePaymentInfoDTO } from "../../domain/profile";
 
 // Use case: update user's data
 export async function updatePaymentUseCase(data: UpdatePaymentInfoDTO): Promise<PaymentInfo | null> {
-    const { userId, ...updateFields } = data;
+    const { id, ...updateFields } = data;
     const projection: ProjectionFields<PaymentInfo> = { _id: 0, cardHolderName: 1, cardNumber: 1 }
 
     const updated = await UserSchema.findOneAndUpdate(
-        { id: userId, deleted: { $ne: true } },
+        { id: id, deleted: { $ne: true } },
         { $set: updateFields },
         { projection, new: true, lean: true },
     );

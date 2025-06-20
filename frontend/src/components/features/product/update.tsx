@@ -14,6 +14,7 @@ import { CreateProductDTO, CreateProductSchema, Product } from "@/lib/types/prod
 import { filenameSplit } from "@/lib/utils";
 import { useDeleteFiles, useUploadFiles } from "@/services/cdn.service";
 import { useUpdateProduct } from "@/services/product.service";
+import { useAuth } from "@/context/auth";
 
 type UpdateProductFormData = z.infer<typeof CreateProductSchema>;
 
@@ -22,6 +23,7 @@ interface UpdateProductModalProps {
 }
 
 export function UpdateProductModal({ product }: UpdateProductModalProps) {
+    const { token } = useAuth()
     const [open, setOpen] = useState(false);
 
     const oldImages = product.images.map(img => filenameSplit(img));
@@ -87,7 +89,7 @@ export function UpdateProductModal({ product }: UpdateProductModalProps) {
         }
 
         // 2. Envia payload
-        updateProduct.mutate({ id: product.id, data: payload });
+        updateProduct.mutate({ id: product.id, data: payload, token });
 
         // 3. Remove do CDN se necessário
         if (removedImages.length > 0) {

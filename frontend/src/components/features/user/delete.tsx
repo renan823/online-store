@@ -6,11 +6,12 @@ import { Trash2 } from "lucide-react";
 
 type Props  = {
     id: string,
+    token: string,
     remake: boolean,
     setRemake: Function,
 }
 
-export function DeleteUserModal({ id, remake, setRemake }: Props) {
+export function DeleteUserModal({ id, token, remake, setRemake }: Props) {
     // State to control whether the dialog is open or not
     const [open, setOpen] = useState(false);
 
@@ -18,7 +19,7 @@ export function DeleteUserModal({ id, remake, setRemake }: Props) {
 
     // Handler for when the user confirms deletion
     async function onDelete(){
-        deleteUser.mutate(id, {onSuccess: () => {
+        deleteUser.mutate({ id, token }, {onSuccess: () => {
             setRemake(!remake)
             // Close the dialog on successful deletion
             setOpen(false)

@@ -22,13 +22,13 @@ export type PaymentInfo = {
 }
 
 export type UpdatePaymentInfoDTO = {
-    userId: string;
+    id: string;
     cardHolderName: string;
     cardNumber: string;
 }
 
 export const UpdatePaymentSchema = z.object({
-    userId: z.string(),
+    id: z.string(),
     cardHolderName: z.string(),
     cardNumber: z.string(),
 });

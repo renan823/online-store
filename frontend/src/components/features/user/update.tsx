@@ -18,15 +18,16 @@ type UpdateUserFormData = z.infer<typeof UpdateUserSchema>;
 
 type Props  = {
     id: string,
+    token: string,
     remake: boolean,
     setRemake: Function,
 }
 
-export function UpdateUserModal({ id, remake, setRemake }: Props) {
+export function UpdateUserModal({ id, token, remake, setRemake }: Props) {
     // State to control whether the dialog is open or not
     const [open, setOpen] = useState(false);
     //Fetch current user data only when the modal is opened
-	const { isLoading, error, data } = useFetchUserById(id, {
+	const { isLoading, error, data } = useFetchUserById(id, token, {
         enabled: open,
         queryKey: ["user", id]
     });
@@ -60,7 +61,7 @@ export function UpdateUserModal({ id, remake, setRemake }: Props) {
         }
 
         // Call the update user mutation, then close modal and reset form on success
-        updateUser.mutate({id, user: payload}, {onSuccess: () => {
+        updateUser.mutate({id, token, user: payload}, {onSuccess: () => {
             setRemake(!remake)
             setOpen(false);
             reset();

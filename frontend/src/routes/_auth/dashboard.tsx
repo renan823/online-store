@@ -9,6 +9,7 @@ import { useFetchMonthlyReport } from "@/services/analytics.service";
 import { AlertCircle, BarChart3, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { currentMonth, currentYear } from "@/lib/utils";
+import { useAuth } from "@/context/auth";
 
 export const Route = createFileRoute("/_auth/dashboard")({
 	beforeLoad: ({ context, location }) => {
@@ -35,10 +36,11 @@ function RouteComponent() {
 }
 
 function MonthlySalesChart() {
+	const { token } = useAuth()
 	const [month, setMonth] = useState(currentMonth());
 	const [year, setYear] = useState(currentYear());
 
-	const { isLoading, error, data } = useFetchMonthlyReport(parseInt(month), parseInt(year));
+	const { isLoading, error, data } = useFetchMonthlyReport(token, parseInt(month), parseInt(year));
 
 	const chartData = useMemo(() => {
 		if (!data || !data.dailySales) return [];

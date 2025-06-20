@@ -10,10 +10,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { CreditCard, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCart } from '@/context/cart'
 import { useAuth } from '@/context/auth'
 import { useCreateOrder } from '@/services/order.service'
+import { useFetchPaymentInfoById } from '@/services/user.service'
 
 export function CheckoutModal() {
     const [cardNumber, setCardNumber] = useState('');
@@ -23,7 +24,19 @@ export function CheckoutModal() {
     const [open, setOpen] = useState(false);
 
     const { items, clear } = useCart();
-    const { user } = useAuth();
+    const { user, token } = useAuth();
+    const { isLoading, error, data: paymentInfo } = useFetchPaymentInfoById(user.id, token, {
+        enabled: true,
+        queryKey: ["payment"]
+    });
+
+    useEffect(() => {
+        if (paymentInfo) {
+            setName(paymentInfo.cardHolderName);
+            setCardNumber(paymentInfo.cardNumber);
+        }
+    }, [paymentInfo]);
+
     const createOrder = useCreateOrder();
 
     const handleSubmit = async () => {
@@ -38,7 +51,7 @@ export function CheckoutModal() {
             })),
         };
 
-        await createOrder.mutateAsync(orderData, {
+        await createOrder.mutateAsync({ orderData, token }, {
             onSuccess: () => {
                 clear(); // Limpa o carrinho
                 setOpen(false); // Fecha o modal
