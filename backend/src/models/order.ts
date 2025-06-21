@@ -19,7 +19,7 @@ const orderSchema = new mongoose.Schema({
         paidAt: Date,
         transactionId: String
     },
-    deleted: { type:Number, default: false }
+    deleted: { type:Boolean, default: false }
 });
 
 export const OrderModel = mongoose.model('Order', orderSchema);

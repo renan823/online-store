@@ -45,8 +45,8 @@ export function CheckoutModal() {
         const orderData = {
             userId: user.id,
             cardId: 'dummy-card-id', // O backend espera um cardId
-            items: items.map(item => ({
-                productId: item.productId,
+            items: cart.items.map(item => ({
+                productId: item.product.id,
                 quantity: item.quantity,
             })),
         };
@@ -59,8 +59,7 @@ export function CheckoutModal() {
         });
     }
 
-    const isFormInvalid = !cardNumber || !name || !cvv || !expiration || items.length === 0;
-
+    const isFormInvalid = !cardNumber || !name || !cvv || !expiration || (cart?.items || []).length === 0; 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>

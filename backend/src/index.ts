@@ -14,6 +14,7 @@ import ordersRouter from './handlers/order.handler';
 import userRouter from './handlers/users.handler';
 import profileRouter from './handlers/profile.handler';
 import productsRouter from './handlers/products.handler'
+import cartRouter from './handlers/cart.handler'; 
 
 const app = new Hono();
 
@@ -80,6 +81,7 @@ app.route('/', analyticsRouter);
 app.route('/', ordersRouter); 
 app.route('/', userRouter);
 app.route('/', profileRouter);
+app.route('/', cartRouter);
 
 // app.get('/users/');
 // app.get('/users/:id');
