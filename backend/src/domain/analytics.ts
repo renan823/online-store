@@ -3,7 +3,7 @@ import z from "zod";
 // Definição dos tipos e validadores do Analytics
 
 type StatusBreakDown = {
-    status: string;
+    _id: string;
     count: number;
 }
 
@@ -16,7 +16,7 @@ type TopProduct = {
 export type MontlhySalesReport = {
     totalOrders: number;
     totalRevenue: number;
-    statusBreakdown: StatusBreakDown;
+    statusBreakdown: StatusBreakDown[];
     topProducts: TopProduct[];
     dailySales: { day: number; total: number }[];
 }

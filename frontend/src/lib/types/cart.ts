@@ -1,3 +1,5 @@
+import z from "zod";
+
 // Estrutura de um item no carrinho, como recebido da API
 export interface CartItem {
     product: {
@@ -18,8 +20,9 @@ export interface Cart {
 }
 
 // DTO para atualizar um item no carrinho
-export interface UpdateCartItemDTO {
-    userId: string;
-    productId: string;
-    quantity: number;
-}
+export const UpdateCartItemSchema = z.object({
+    userId: z.string(),
+    productId: z.string(),
+    quantity: z.number().min(0), // 0 para remover
+});
+export type UpdateCartItemDTO = z.infer<typeof UpdateCartItemSchema>;

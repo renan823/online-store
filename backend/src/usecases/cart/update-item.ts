@@ -1,10 +1,10 @@
 import { UpdateCartItemDTO } from "../../domain/cart";
 import { CartModel } from "../../models/cart";
 import { ProductModel } from "../../models/product";
-import { UserSchema } from "../../models/user"; // CORREÇÃO AQUI
+import { UserSchema } from "../../models/user";
 
 export async function updateCartItemUseCase(data: UpdateCartItemDTO): Promise<boolean> {
-    const user = await UserSchema.findOne({ id: data.userId }); // CORREÇÃO AQUI
+    const user = await UserSchema.findOne({ id: data.userId });
     if (!user) return false;
 
     const product = await ProductModel.findOne({ id: data.productId });

@@ -13,6 +13,8 @@ async function fetchMonthlyReport(token: string, month: number, year: number): P
         throw new Error("Failed to fetch monthly report");
     }
 
+    console.log(response.data);
+
     return response.data;
 }
 

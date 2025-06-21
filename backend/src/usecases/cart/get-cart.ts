@@ -1,10 +1,10 @@
 import { Cart } from "../../domain/cart";
 import { CartModel } from "../../models/cart";
 import { ProductModel } from "../../models/product";
-import { UserSchema } from "../../models/user"; // CORREÇÃO AQUI
+import { UserSchema } from "../../models/user";
 
 export async function getCartByUserIdUseCase(userId: string): Promise<Cart | null> {
-    const user = await UserSchema.findOne({ id: userId }); // CORREÇÃO AQUI
+    const user = await UserSchema.findOne({ id: userId });
     if (!user) {
         return null;
     }

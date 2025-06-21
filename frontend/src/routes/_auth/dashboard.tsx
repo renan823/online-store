@@ -178,10 +178,10 @@ function MonthlySalesChart() {
 								<CardTitle>Status dos Pedidos</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-1">
-								{Object.entries(data.statusBreakdown).map(([status, count]) => (
-									<div key={status} className="flex justify-between text-sm">
-										<span>{status}</span>
-										<span className="font-medium">{count}</span>
+								{data.statusBreakdown.map((item) => (
+									<div key={item._id} className="flex justify-between text-sm">
+										<span>{item._id}</span>
+										<span className="font-medium">{item.count}</span>
 									</div>
 								))}
 							</CardContent>

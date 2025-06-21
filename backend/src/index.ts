@@ -15,12 +15,15 @@ import userRouter from './handlers/users.handler';
 import profileRouter from './handlers/profile.handler';
 import productsRouter from './handlers/products.handler'
 import cartRouter from './handlers/cart.handler'; 
+import { createDefaultAdminUseCase } from './usecases/user/admin';
 
 const app = new Hono();
 
 // Iniciar mongoose
 (async () => {
 	await mongoose.connect(`mongodb://localhost:27017/web`, { authSource: "admin", auth: { username: "root", password: "root" } });
+
+	await createDefaultAdminUseCase();
 })();
 
 app.use(

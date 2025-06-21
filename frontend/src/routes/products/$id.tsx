@@ -7,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useAuth } from '@/context/auth';
 import { useCart } from '@/context/cart';
-import { notify } from '@/lib/notify';
 import { Product } from '@/lib/types/product';
 import { useFetchProductById } from '@/services/product.service';
 import { createFileRoute } from '@tanstack/react-router';
@@ -30,7 +29,7 @@ function UserOptions({ product }: OptionsProps) {
 		if (!product) return;
 		add(
 			{
-				productId: product.id,
+				id: product.id,
 				name: product.name,
 				discount: product.discount,
 				image: product.images[0],
@@ -38,7 +37,6 @@ function UserOptions({ product }: OptionsProps) {
 			},
 			quantity
 		);
-		notify.success('Adicionado ao carrinho');
 	}
 
 	function increaseAmount() {

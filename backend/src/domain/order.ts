@@ -1,4 +1,5 @@
 import z from "zod";
+import { PaymentCardSchema } from "./user";
 
 
 export const OrderItemSchema = z.object({
@@ -24,7 +25,7 @@ export const CreateOrderSchema = z.object({
         productId: z.string(),
         quantity: z.number().min(1),
     })),
-    cardId: z.string(),
+    card: PaymentCardSchema,
 });
 
 export type UpdateOrderDTO = z.infer<typeof UpdateOrderSchema>;

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PaymentCardSchema } from "./user";
 
 // Tipos baseados no backend/src/domain/order.ts
 
@@ -25,7 +26,8 @@ export const CreateOrderSchema = z.object({
         productId: z.string(),
         quantity: z.number().min(1),
     })),
-    cardId: z.string(), // Mesmo que não implementado, o backend espera
+    card: PaymentCardSchema,
 });
 
 export type CreateOrderDTO = z.infer<typeof CreateOrderSchema>;
+
