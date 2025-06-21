@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     role: {type: String, enum: ["admin", "user"], default: "user"},
     cardHolderName: {type: String, required: false},
     cardNumber: {type: String, required: false},
-    deleted: { type:Number, default: false }
+    deleted: { type:Boolean, default: false }
 });
 
 //export type User = mongoose.InferSchemaType<typeof userSchema>;
