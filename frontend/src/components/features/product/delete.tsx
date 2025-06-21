@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useDeleteFiles } from '@/services/cdn.service';
 import { useDeleteProduct } from '@/services/product.service';
 import { filenameSplit } from '@/lib/utils';
+import { useAuth } from '@/context/auth';
 
 interface DeleteProductModalProps {
     name: string;
@@ -12,6 +13,7 @@ interface DeleteProductModalProps {
 }
 
 export function DeleteProductModal({ name, id, images }: DeleteProductModalProps) {
+    const { token } = useAuth()
     const [open, setOpen] = useState(false);
 
     const deleteFiles = useDeleteFiles();
@@ -23,7 +25,7 @@ export function DeleteProductModal({ name, id, images }: DeleteProductModalProps
         console.log(files)
 
         deleteFiles.mutate(files);
-        deleteProduct.mutate(id);
+        deleteProduct.mutate({ id, token });
 
         setOpen(false);
     }

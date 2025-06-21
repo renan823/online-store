@@ -55,9 +55,8 @@ export function RegisterForm({ redirect }: RegisterFormProps) {
             password: data.password
         }
         createUser.mutate(payload, {onSuccess: async () => {
-            login(data);
+            login(data, redirect);
             await router.invalidate();
-            redirect();
         }})
     }
 

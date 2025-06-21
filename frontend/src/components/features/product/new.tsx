@@ -14,10 +14,12 @@ import { useUploadFiles } from "@/services/cdn.service";
 import { useCreateProduct } from "@/services/product.service";
 import { z } from "zod";
 import { CDN_URL } from "@/services/config";
+import { useAuth } from "@/context/auth";
 
 type CreateProductFormData = z.infer<typeof CreateProductSchema>;
 
 export function NewProductModal() {
+    const { token } = useAuth()
     const [open, setOpen] = useState(false);
 
     const { control, handleSubmit, reset, formState: { errors } } = useForm<CreateProductFormData>({
@@ -57,7 +59,7 @@ export function NewProductModal() {
             });
         }
 
-        createProduct.mutate(payload);
+        createProduct.mutate({ product: payload, token });
 
         setOpen(false);
         reset();

@@ -46,8 +46,12 @@ export function useFetchProductById(id: string) {
 /*
 Função para criar um produto e seu hook
 */
-export async function createProduct(product: CreateProductDTO): Promise<boolean> {
-    const response = await api.post<boolean>("/products/new", product);
+export async function createProduct(product: CreateProductDTO, token: string): Promise<boolean> {
+    const response = await api.post<boolean>("/products/new", product, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
     if (response.status !== 201) {
         throw new Error("Failed to create product!");
     }
@@ -63,7 +67,7 @@ export function useCreateProduct() {
 
     return useMutation({
         mutationKey: ["create", "product"],
-        mutationFn: createProduct,
+        mutationFn: ({ product, token }: { product: CreateProductDTO, token: string }) => createProduct(product, token),
         onSuccess: () => {
             notify.success("Produto criado.");
             client.invalidateQueries({ queryKey: ["products", params] });
@@ -75,8 +79,12 @@ export function useCreateProduct() {
 /*
 Função para deletar um produto e seu hook
 */
-export async function deleteProduct(id: string): Promise<boolean> {
-    const response = await api.delete<boolean>(`/products/${id}`);
+export async function deleteProduct(id: string, token: string): Promise<boolean> {
+    const response = await api.delete<boolean>(`/products/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
     if (response.status !== 200) {
         throw new Error("Failed to delete product!");
     }
@@ -89,7 +97,7 @@ export function useDeleteProduct() {
 
     return useMutation({
         mutationKey: ["delete", "product"],
-        mutationFn: deleteProduct,
+        mutationFn: ({ id, token }: { id: string, token: string }) => deleteProduct(id, token),
         onSuccess: () => {
             notify.success("Produto deletado.");
             navigate({ to: "/products", replace: true });
@@ -102,8 +110,12 @@ export function useDeleteProduct() {
 Função para atualizar o produto e seu hook
 */
 
-export async function updateProduct(id: string, data: CreateProductDTO): Promise<string> {
-    const response = await api.put<boolean>("/products", { ...data, id });
+export async function updateProduct(id: string, data: CreateProductDTO, token: string): Promise<string> {
+    const response = await api.put<boolean>("/products", { ...data, id }, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
     if (response.status !== 200) {
         throw new Error("Failed to update product!");
     }
@@ -116,7 +128,7 @@ export function useUpdateProduct() {
 
     return useMutation({
         mutationKey: ["update", "product"],
-        mutationFn: ({ id, data }: { id: string, data: CreateProductDTO }) => updateProduct(id, data),
+        mutationFn: ({ id, data, token }: { id: string, data: CreateProductDTO, token: string}) => updateProduct(id, data, token),
         onSuccess: (id) => {
             notify.success("Produto atualizado.");
             client.invalidateQueries({ queryKey: ["products", id] })

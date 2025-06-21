@@ -1,10 +1,12 @@
-import { User, UserCredentials } from "@/lib/types/user";
+import { LoginResponse, User, UserCredentials } from "@/lib/types/user";
+import { useLogin } from "@/services/user.service";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 export interface AuthContextType {
     login: (credentials: UserCredentials) => void;
     logout: () => void;
     user: User | null;
+    token: string | null;
 }
 
 interface AuthProviderProps {
@@ -14,36 +16,27 @@ interface AuthProviderProps {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: AuthProviderProps) {
+    const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
+    const doLogin = useLogin()
 
-    function login(credentials: UserCredentials) {
-        if (credentials.email === "admin@email.com") {
-            setUser({
-                id: "q4234234",
-                name: "Joãozinho",
-                email: credentials.email,
-                address: "Rua Jacinto Favoretto",
-                phone: "11 645879921",
-                role: "admin"
-            })
-        } else {
-            setUser({
-                id: "q4234234",
-                name: "Joãozinho",
-                email: credentials.email,
-                address: "Rua Jacinto Favoretto",
-                phone: "11 645879921",
-                role: "user",
-            })
-        }
+    function login(credentials: UserCredentials, redirect: Function) {
+        doLogin.mutate(credentials, {
+            onSuccess: (response) => {
+                setUser(response.payload.user);
+                setToken(response.token);
+                redirect()
+            },
+        });
     }
 
     function logout() {
         setUser(null);
+        setToken(null);
     }
 
     return (
-        <AuthContext.Provider value={{ login, logout, user }}>
+        <AuthContext.Provider value={{ login, logout, user, token }}>
             {children}
         </AuthContext.Provider>
     )

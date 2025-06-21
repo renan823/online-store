@@ -10,6 +10,7 @@ import { findOrderByIdUseCase } from '../usecases/order/find-by-id';
 import { createOrderUseCase } from '../usecases/order/create';
 import { updateOrderUseCase } from '../usecases/order/update';
 import { deleteOrderUseCase } from '../usecases/order/delete';
+import { getCookie } from 'hono/cookie';
 
 // Roteador de Compras
 const ordersRouter = new Hono().basePath('/orders');
@@ -24,6 +25,8 @@ ordersRouter.get('/', zValidator("query", OrderFilterSchema), async (c) => {
 // Buscar compra por id
 ordersRouter.get('/:id', async (c) => {
     const id = c.req.param('id');
+    if(getCookie(c, "id") !== id) return c.json({ error: 'Invalid credentials' }, 401);
+
     const order = await findOrderByIdUseCase(id);
 
     if (!order) {

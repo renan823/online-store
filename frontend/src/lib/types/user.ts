@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+export type LoginResponse = {
+    payload: {
+        user: User,
+        exp: Number
+    },
+    token: string
+}
+
+
 export interface UserCredentials {
     email: string;
     password: string;

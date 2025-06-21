@@ -32,11 +32,9 @@ export function LoginForm({ redirect }: LoginFormProps) {
     const router = useRouter();
 
     async function onSubmit(data: LoginFormValues) {
-        login(data);
+        login(data, redirect);
 
         await router.invalidate();
-
-        redirect();
     }
 
     return (

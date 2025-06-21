@@ -32,7 +32,7 @@ type UpdatePersonalInfoFormData = z.infer<typeof UpdatePersonalInfoSchema>;
 type UpdatePaymentInfoFormData = z.infer<typeof UpdatePaymentInfoSchema>;
 
 function RouteComponent() {
-    const { user, logout } = useAuth();
+    const { user, token, logout } = useAuth();
     const updatePersonalInfo = useUpdatePersonalInfo()
     const updatePaymentInfo = useUpdatePaymentInfo()
     const navigate = useNavigate();
@@ -69,25 +69,25 @@ function RouteComponent() {
 
     // Submit handler for personal info section
     const onSubmitPersonalInfo = (data: UpdatePersonalInfoFormData) => {
-        if(!user) return;
+        if(!user || !token) return;
 
         const payload: UpdatePersonalInfoDTO = {
             name: data.name,
             phone: data.phone,
             address: data.address,
         }
-        updatePersonalInfo.mutate({id: user.id, user: payload});
+        updatePersonalInfo.mutate({id: user.id, user: payload, token});
     };
 
     // Submit handler for payment info section
     const onPaymentInfoSubmit = (data: UpdatePaymentInfoFormData) => {
-        if(!user) return;
+        if(!user || !token) return;
 
         const payload: UpdatePaymentInfoDTO = {
             cardHolderName: data.cardHolderName,
             cardNumber: data.cardNumber
         }
-        updatePaymentInfo.mutate({id: user.id, payment: payload});
+        updatePaymentInfo.mutate({id: user.id, payment: payload, token});
     };
 
     const handleLogout = () => {
@@ -95,7 +95,7 @@ function RouteComponent() {
         navigate({ to: '/', replace: true });
     };
     // Fetches payment info belonging to the logged user
-    const { isLoading, error, data } = useFetchPaymentInfoById(user.id, {
+    const { isLoading, error, data } = useFetchPaymentInfoById(user.id, token, {
         enabled: activeSection == "pagamento" && user != null,
         queryKey: ["payment"]
     });
