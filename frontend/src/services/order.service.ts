@@ -7,15 +7,21 @@ import { Pagination } from "@/lib/utils";
 
 //Cria uma nova compra no backend.
 async function createOrder(orderData: CreateOrderDTO, token: string): Promise<Order> {
-    const response = await api.post<Order>('/orders', orderData, {
-        headers: {
-            "Authorization": `Bearer ${token}`
+    try {
+        const response = await api.post<Order>('/orders', orderData, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (response.status !== 201) {
+            throw new Error("Falha ao criar a compra.");
         }
-    });
-    if (response.status !== 201) {
-        throw new Error("Falha ao criar a compra.");
+        
+        return response.data;
+    } catch (error: any) {
+        throw new Error(error.response.data.error ?? "Algo deu errado");
     }
-    return response.data;
 }
 
 /**
@@ -32,8 +38,7 @@ export function useCreateOrder() {
             queryClient.invalidateQueries({ queryKey: ["orders"] });
         },
         onError: (error) => {
-            console.error("Erro ao criar a compra:", error);
-            notify.error("Não foi possível finalizar a compra.");
+            notify.error(error.message);
         },
     });
 }

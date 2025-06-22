@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { FieldError, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CreateProductDTO, CreateProductSchema, Product } from "@/lib/types/product";
 import { filenameSplit } from "@/lib/utils";
 import { useDeleteFiles, useUploadFiles } from "@/services/cdn.service";
@@ -26,9 +26,9 @@ export function UpdateProductModal({ product }: UpdateProductModalProps) {
     const { token } = useAuth()
     const [open, setOpen] = useState(false);
 
-    const oldImages = product.images.map(img => filenameSplit(img));
+    const oldImageRefs = useRef<string[]>([]);
 
-    const { control, handleSubmit, setValue, reset, formState: { errors } } = useForm<UpdateProductFormData>({
+    const { control, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm<UpdateProductFormData>({
         resolver: zodResolver(CreateProductSchema),
         defaultValues: {
             name: product.name,
@@ -40,6 +40,8 @@ export function UpdateProductModal({ product }: UpdateProductModalProps) {
             files: [],
         },
     });
+
+    const watchedFiles = watch("files");
 
     const uploadFiles = useUploadFiles();
     const deleteFiles = useDeleteFiles();
@@ -55,14 +57,21 @@ export function UpdateProductModal({ product }: UpdateProductModalProps) {
     async function setupImages() {
         const files = await Promise.all(product.images.map(img => fetchImage(img)));
         setValue("files", files);
+        oldImageRefs.current = product.images.map(filenameSplit);
     }
 
     async function onSubmit(data: UpdateProductFormData) {
-        const oldFileNames = oldImages.map(url => filenameSplit(url));
+        if (!token) return;
 
-        const keptFiles = data.files.filter(f => oldFileNames.includes(f.name));
-        const newFiles = data.files.filter(f => !oldFileNames.includes(f.name));
-        const removedImages = oldImages.filter(url => !data.files.find(f => f.name === filenameSplit(url)));
+        const currentFileNames = data.files.map(f => f.name);
+        const originalImageMap = Object.fromEntries(product.images.map(img => [filenameSplit(img), img]));
+
+        const keptFiles = data.files.filter(f => originalImageMap[f.name]);
+        const newFiles = data.files.filter(f => !originalImageMap[f.name]);
+
+        const removedImages = Object.keys(originalImageMap)
+            .filter(name => !currentFileNames.includes(name))
+            .map(name => originalImageMap[name]);
 
         const payload: CreateProductDTO = {
             name: data.name,
@@ -74,24 +83,21 @@ export function UpdateProductModal({ product }: UpdateProductModalProps) {
             quantityStock: data.quantityStock,
         };
 
-        // 1. Upload de novas imagens
         if (newFiles.length > 0) {
             await uploadFiles.mutateAsync(newFiles, {
                 onSuccess: (r) => {
                     payload.images = [
-                        ...keptFiles.map(f => oldImages.find(url => filenameSplit(url) === f.name)!),
-                        ...r,
+                        ...keptFiles.map(f => originalImageMap[f.name]),
+                        ...r.map(u => `http://localhost:5000/${u}`),
                     ];
-                }
-            })
+                },
+            });
         } else {
-            payload.images = keptFiles.map(f => oldImages.find(url => filenameSplit(url) === f.name)!);
+            payload.images = keptFiles.map(f => originalImageMap[f.name]);
         }
 
-        // 2. Envia payload
         updateProduct.mutate({ id: product.id, data: payload, token });
 
-        // 3. Remove do CDN se necessário
         if (removedImages.length > 0) {
             deleteFiles.mutate(removedImages);
         }
@@ -100,23 +106,40 @@ export function UpdateProductModal({ product }: UpdateProductModalProps) {
         reset();
     }
 
+    useEffect(() => {
+        if (open) {
+            reset({
+                name: product.name,
+                description: product.description,
+                price: product.price,
+                brand: product.brand,
+                discount: product.discount,
+                quantityStock: product.quantityStock,
+                files: [],
+            });
+
+            setupImages();
+        }
+    }, [open]);
 
     useEffect(() => {
-    if (open) {
-        reset({
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            brand: product.brand,
-            discount: product.discount,
-            quantityStock: product.quantityStock,
-            files: [],
-        });
+        const currentFiles = watchedFiles || [];
+        const currentNames = currentFiles.map(f => f.name);
 
-        setupImages();
+        const removed = oldImageRefs.current.filter(name => !currentNames.includes(name));
+        const added = currentNames.filter(name => !oldImageRefs.current.includes(name));
+
+        if (removed.length || added.length) {
+            oldImageRefs.current = [
+                ...oldImageRefs.current.filter(name => !removed.includes(name)),
+                ...added,
+            ];
+        }
+    }, [watchedFiles]);
+
+    if (!token) {
+        return <></>
     }
-}, [open]);
-
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -169,7 +192,7 @@ export function UpdateProductModal({ product }: UpdateProductModalProps) {
                     </div>
 
                     <DialogFooter>
-                        <Button type="submit">Criar</Button>
+                        <Button type="submit">Atualizar</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

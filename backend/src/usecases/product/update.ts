@@ -15,6 +15,8 @@ export async function updateProductUseCase(data: UpdateProductDTO): Promise<Prod
         return null;
     };
 
+    console.log(updated.images)
+
     const product: Product = {
         id: updated.id,
 		name: updated.name,

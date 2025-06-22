@@ -10,6 +10,8 @@ import { AlertCircle, BarChart3, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { currentMonth, currentYear } from "@/lib/utils";
 import { useAuth } from "@/context/auth";
+import { Badge } from "@/components/ui/badge";
+import { statusStyles, statusTranslations } from "@/lib/types/order";
 
 export const Route = createFileRoute("/_auth/dashboard")({
 	beforeLoad: ({ context, location }) => {
@@ -40,7 +42,7 @@ function MonthlySalesChart() {
 	const [month, setMonth] = useState(currentMonth());
 	const [year, setYear] = useState(currentYear());
 
-	const { isLoading, error, data } = useFetchMonthlyReport(token, parseInt(month), parseInt(year));
+	const { isLoading, error, data } = useFetchMonthlyReport(token || "", parseInt(month), parseInt(year));
 
 	const chartData = useMemo(() => {
 		if (!data || !data.dailySales) return [];
@@ -126,7 +128,7 @@ function MonthlySalesChart() {
 					<p className="text-xl">Nenhum dado disponível para este mês.</p>
 				</div>
 			) : (
-				<div>
+				<div className="space-y-4">
 					<Card>
 						<CardHeader>
 							<CardTitle>Vendas de {month}/{year}</CardTitle>
@@ -162,7 +164,7 @@ function MonthlySalesChart() {
 								<CardTitle>Total de Pedidos</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<p className="text-3xl font-bold text-rose-500">40</p>
+								<p className="text-3xl font-bold text-rose-500">{data.totalOrders}</p>
 							</CardContent>
 						</Card>
 						<Card>
@@ -170,19 +172,16 @@ function MonthlySalesChart() {
 								<CardTitle>Receita Total</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<p className="text-3xl font-bold text-rose-500">R$ 5.200,00</p>
+								<p className="text-3xl font-bold text-rose-500">R$ {data.totalRevenue.toFixed(2)}</p>
 							</CardContent>
 						</Card>
 						<Card>
 							<CardHeader>
 								<CardTitle>Status dos Pedidos</CardTitle>
 							</CardHeader>
-							<CardContent className="space-y-1">
+							<CardContent className="grid-cols-4">
 								{data.statusBreakdown.map((item) => (
-									<div key={item._id} className="flex justify-between text-sm">
-										<span>{item._id}</span>
-										<span className="font-medium">{item.count}</span>
-									</div>
+									<Badge className={statusStyles[item._id]}>{statusTranslations[item._id]} - {item.count}</Badge>
 								))}
 							</CardContent>
 						</Card>

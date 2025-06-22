@@ -1,5 +1,7 @@
+import { OrderStatus } from "./order";
+
 type StatusBreakDown = {
-    _id: string;
+    _id: OrderStatus;
     count: number;
 }
 

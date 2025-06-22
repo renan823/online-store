@@ -5,7 +5,7 @@ import { ProductModel } from "../../models/product";
 // Caso de uso: buscar produtos pelo filtro
 export async function findManyProductsUseCase(filter: ProductFilter): Promise<Pagination<Product>> {
 	// Cria uma query e adiciona filtros (se tiver)
-	const query: any = { deleted: {$ne:true} };
+	const query: any = { deleted: 0 };
 
 	// Filtro de busca (texto no nome - ignora upperCase etc)
 	if (filter.search && filter.search.trim() !== "") {
@@ -26,6 +26,8 @@ export async function findManyProductsUseCase(filter: ProductFilter): Promise<Pa
 		ProductModel.find(query).skip(skip).limit(limit).lean(),
 		ProductModel.countDocuments(query),
 	]);
+
+	console.log(items.filter(i => i.deleted))
 
 	// Mapeia resultados
 	const products: Product[] = items.map((p) => ({

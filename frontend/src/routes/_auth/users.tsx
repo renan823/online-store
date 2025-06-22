@@ -39,7 +39,7 @@ function UsersListPage() {
     const [remakeReq, setRemakeReq] = useState(false)
 
     //Fetch users
-	const { isLoading, error, data: users} = useFetchUsers(token, remakeReq);
+	const { isLoading, error, data: users} = useFetchUsers(token || "", remakeReq);
 
     if (user?.role !== "admin") {
         return (
@@ -96,7 +96,7 @@ function UsersListPage() {
                             <Search className="h-5 w-5" />
                         </Button>
                     </div>
-                    <NewUserModal token={token} remake={remakeReq} setRemake={setRemakeReq}/>
+                    <NewUserModal token={token || ""} remake={remakeReq} setRemake={setRemakeReq}/>
                 </div>
 
                 <div className="border rounded-lg overflow-hidden">
@@ -112,16 +112,16 @@ function UsersListPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredUsers.map((u) => (
+                            {filteredUsers.filter(u => u.email !== "admin@email.com").map((u) => (
                                 <TableRow key={u.id} className="hover:bg-muted/30">
                                     <TableCell className="text-center font-medium">{u.id}</TableCell>
                                     <TableCell>{u.name}</TableCell>
                                     <TableCell>{u.email}</TableCell>
                                     <TableCell className="hidden md:table-cell">{u.phone}</TableCell>
                                     <TableCell className="text-center">{u.role.toUpperCase()}</TableCell>
-                                    <TableCell className="text-center space-x-2">
-                                        <UpdateUserModal token={token} id={u.id} remake={remakeReq} setRemake={setRemakeReq}/>
-                                        <DeleteUserModal token={token} id={u.id} remake={remakeReq} setRemake={setRemakeReq}/>
+                                    <TableCell className="text-center flex gap-3">
+                                        <UpdateUserModal token={token || ""} id={u.id} remake={remakeReq} setRemake={setRemakeReq}/>
+                                        <DeleteUserModal token={token || ""} id={u.id} remake={remakeReq} setRemake={setRemakeReq}/>
                                     </TableCell>
                                 </TableRow>
                             ))}

@@ -1,7 +1,7 @@
 import { DeleteProductModal } from '@/components/features/product/delete';
 import { ProductLastUnitsLabel, ProductPriceLabel } from '@/components/features/product/labels';
 import { UpdateProductModal } from '@/components/features/product/update';
-import { Badge } from '@/components/features/user/badge';
+import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';

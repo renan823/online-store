@@ -38,11 +38,16 @@ ordersRouter.get('/:id', async (c) => {
 // Criar nova compra
 ordersRouter.post('/', zValidator("json", CreateOrderSchema),  async (c) => {
     const data = c.req.valid("json");
-    const created = await createOrderUseCase(data);
-    if (!created) {
-        return c.json({ error: 'Falha ao criar a compra' }, 400);
+    try {
+        const created = await createOrderUseCase(data);
+        if (!created) {
+            return c.json({ error: 'Falha ao criar a compra' }, 400);
+        }
+
+        return c.json(created, 201);
+    } catch (error: any) {
+        return c.json({ error: error.message ?? "Algo deu errado" }, 400);
     }
-    return c.json(created, 201);
 });
 
 // Atualizar status de uma compra

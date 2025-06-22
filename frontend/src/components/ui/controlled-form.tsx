@@ -2,7 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Control, Controller, FieldError } from "react-hook-form";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { ScrollArea } from "./scroll-area";
@@ -157,20 +157,20 @@ export function ControlledMultipleFileInput({ name, control }: ControlledMultipl
                             {files.length > 0 && (
                                 <div className="grid gap-2">
                                     {files.map((file, index) => (
-                                        <Card key={index} className="flex-row items-center justify-between p-2 rounded-sm">
-                                            <CardContent className="flex flex-row gap-2 p-0">
+                                        <Card key={index} className="flex items-center justify-between p-2 rounded-sm">
+                                            <div className="flex items-center gap-2">
                                                 <img
                                                     src={URL.createObjectURL(file)}
-                                                    alt={file.name}
+                                                    alt=""
                                                     className="w-12 h-12 object-cover rounded"
                                                 />
-                                                <div>
-                                                    <p className="text-sm">{file.name}</p>
+                                                <div className="max-w-[90%]">
+                                                    <p className="text-sm break-all">{file.name}</p>
                                                     <p className="text-xs text-muted-foreground">
                                                         {(file.size / 1024).toFixed(1)} KB
                                                     </p>
                                                 </div>
-                                            </CardContent>
+                                            </div>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
@@ -183,6 +183,7 @@ export function ControlledMultipleFileInput({ name, control }: ControlledMultipl
                                 </div>
                             )}
                         </ScrollArea>
+
                     </div>
                 );
             }}

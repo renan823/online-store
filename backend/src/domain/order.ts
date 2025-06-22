@@ -1,19 +1,22 @@
 import z from "zod";
 import { PaymentCardSchema } from "./user";
 
+export type OrderStatus = 'pending' | 'paid' | 'shipped' | 'cancelled';
 
-export const OrderItemSchema = z.object({
-    productId: z.string(),
-    quantity: z.number().min(1),
-    price: z.number() 
-});
-
+export type OrderItem = {
+    quantity: number;
+    product: {
+        id: string;
+        name: string;
+        price: number;
+    }
+}
 export type Order = {
     id: string;
     user: string; // ID do usuário
-    items: z.infer<typeof OrderItemSchema>[];
+    items: OrderItem[];
     total: number;
-    status: 'pending' | 'paid' | 'shipped' | 'cancelled';
+    status: OrderStatus;
     createdAt: Date;
 }
 
