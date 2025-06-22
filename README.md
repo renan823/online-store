@@ -128,6 +128,7 @@ bun run dev
 ```
 
 ## Problemas
+De modo geral, o desenvolvimento ocorreu sem problemas significativos. O desafio principal residiu em assegurar a consistência do código e da arquitetura, especialmente na padronização da nomenclatura de variáveis, na assinatura de funções e na organização dos componentes.
 
 ## Comentários adicionais
 Para facilitar o desenvolvimento, as seguintes bibliotecas/frameworks forma utilizadas: <br/>

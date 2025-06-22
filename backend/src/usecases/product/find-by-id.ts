@@ -3,7 +3,7 @@ import { ProductModel } from "../../models/product";
 
 // Caso de uso: buscar produto por id
 export async function findProductByIdUseCase(id: string): Promise<Product | null> {
-    const product = await ProductModel.findOne({ id, deleted: false }).lean();
+    const product = await ProductModel.findOne({ id, deleted: {$ne:true} }).lean();
 
     if (!product) {
         return null;
