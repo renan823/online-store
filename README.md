@@ -97,7 +97,7 @@ Os teste foram realizados manualmente de modo a verificar o comportamento do sit
 - Teste de atualização de dashboard do admin
 
 ## Resultados dos testes
-Os resultados dos testes, inicialmente, indicaram alguns erros.
+Os resultados dos testes, inicialmente, indicaram alguns erros, que foram corrigidos posteriormente. Atualmente, todos os casos de teste apresentam resultado positivo.
 
 ## Instalação e execução
 Clone este reposiório. </br>
