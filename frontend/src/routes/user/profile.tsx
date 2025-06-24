@@ -78,7 +78,7 @@ function RouteComponent() {
 }
 
 function EditProfile() {
-    const { user, token } = useAuth();
+    const { user, token, update } = useAuth();
     const updatePersonalInfo = useUpdatePersonalInfo();
 
     // Initialize react-hook-form with zod schema resolver for personal info form
@@ -102,6 +102,7 @@ function EditProfile() {
         }
 
         updatePersonalInfo.mutate({ id: user.id, token, user: data });
+        update(data.name, data.phone, data.address)
     }
 
     if (!user) {
