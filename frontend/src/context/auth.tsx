@@ -1,10 +1,11 @@
-import { LoginResponse, User, UserCredentials } from "@/lib/types/user";
+import { User, UserCredentials } from "@/lib/types/user";
 import { useLogin } from "@/services/user.service";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 export interface AuthContextType {
     login: (credentials: UserCredentials) => void;
     logout: () => void;
+    update: (name: string, phone: string, address: string) => void
     user: User | null;
     token: string | null;
 }
@@ -34,9 +35,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(null);
         setToken(null);
     }
+    
+    function update(name: string, phone: string, address: string){
+        const updatedUser = {...user}
+        updatedUser.name = name
+        updatedUser.phone = phone
+        updatedUser.address = address
+        
+        setUser(updatedUser as User)
+    }
 
     return (
-        <AuthContext.Provider value={{ login, logout, user, token }}>
+        <AuthContext.Provider value={{ login, logout, update, user, token }}>
             {children}
         </AuthContext.Provider>
     )

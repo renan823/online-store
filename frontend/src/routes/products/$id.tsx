@@ -23,10 +23,14 @@ interface OptionsProps {
 
 function UserOptions({ product }: OptionsProps) {
 	const [quantity, setQuantity] = useState(1);
-	const { add } = useCart();
+	const { add, cart } = useCart();
 
 	function addToCart() {
 		if (!product) return;
+
+		const existingItem = cart?.items.find( i => i.product.id === product.id)
+		//Checks if new product quantity will exceed quantity in stock
+		const newQuantity = existingItem?.quantity + quantity > product.quantityStock ? product.quantityStock - existingItem?.quantity : quantity
 		add(
 			{
 				id: product.id,
@@ -35,7 +39,7 @@ function UserOptions({ product }: OptionsProps) {
 				image: product.images[0],
 				price: product.price,
 			},
-			quantity
+			newQuantity
 		);
 	}
 

@@ -78,9 +78,26 @@ O uso da cdn possibilita servir diretamente conteúdo estático via url (ex: `ht
 ## Comentários sobre o código
 
 ## Plano de testes
-Para executar teste do backend, plataformas como Postman e Insomnia podem ser úteis. A princípio, o código deve ser auto documentável, com o uso do Swagger, o que facilita testes na interface embutida (Swagger-ui).
+Os teste foram realizados manualmente de modo a verificar o comportamento do site durante casos de uso esperados e alguns edge cases. Segue o plano de testes realizado.
+- Teste de login com as credenciais default de admin
+- Teste de CRUD de usuário pelo painel de admin
+- Teste de CRUD de produtos pelo painel de admin
+- Teste de logout
+- Teste de criação de conta de usário (pela tela de cadastro)
+- Teste de validação dos inputs na criação de conta
+- Teste de login como usuário
+- Teste de alteração das informações pessoais
+- Teste de validação dos inputs na alteração das informações pessoais
+- Teste de compra de produto e validação de estoque
+- Teste de CRUD de produtos no carrinho
+- Teste de finalização de compra
+- Teste de validação dos inputs do meio de pagamento
+- Teste de criação de pedido e status de entrega
+- Teste de decrescimento de estoque após a compra
+- Teste de atualização de dashboard do admin
 
 ## Resultados dos testes
+Os resultados dos testes, inicialmente, indicaram alguns erros, que foram corrigidos posteriormente. Atualmente, todos os casos de teste apresentam resultado positivo.
 
 ## Instalação e execução
 Clone este reposiório. </br>
@@ -128,7 +145,6 @@ bun run dev
 ```
 
 ## Problemas
-De modo geral, o desenvolvimento ocorreu sem problemas significativos. O desafio principal residiu em assegurar a consistência do código e da arquitetura, especialmente na padronização da nomenclatura de variáveis, na assinatura de funções e na organização dos componentes.
 
 ## Comentários adicionais
 Para facilitar o desenvolvimento, as seguintes bibliotecas/frameworks forma utilizadas: <br/>
