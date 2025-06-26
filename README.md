@@ -144,6 +144,10 @@ bun install
 bun run dev
 ```
 
+</br>
+Para testar as funcionalidades como admin, use o email "admin@email.com" com a senha "admin_admin"
+</br>
+
 ## Problemas
 
 ## Comentários adicionais
